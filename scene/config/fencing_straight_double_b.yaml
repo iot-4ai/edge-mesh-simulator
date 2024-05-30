@@ -1,0 +1,34 @@
+root_prim: fences
+generated:
+  - name: fence_a
+    path: fence_a
+    usd_config:
+      root: /NVIDIA/Assets/ArchVis/Industrial/Railing/
+      search_depth: 0
+      filter: MetalFencing_A2.usd
+    semantic: "fence"
+    position:
+      base: [0, -2.20, 0]
+    orientation:
+      base: [0, 0, 0]
+    scale: [0.01, 0.01, 0.01]
+    physics:
+      apply_children: false
+      collision: "convexDecomposition"
+      rigid_body: false
+  - name: fence_b
+    path: fence_b
+    usd_config:
+      root: /NVIDIA/Assets/ArchVis/Industrial/Railing/
+      search_depth: 0
+      filter: MetalFencing_A2.usd
+    semantic: "fence"
+    position:
+      base: [-1.0, -2.20, 0]
+    orientation:
+      base: [0, 0, 0]
+    scale: [0.01, 0.01, 0.01]
+    physics:
+      apply_children: false
+      collision: "convexDecomposition"
+      rigid_body: false

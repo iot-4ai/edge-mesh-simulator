@@ -1,0 +1,36 @@
+root_prim: robots
+generated:
+  - name: transporter_a
+    path: transporter_a
+    position:
+      base: [0.55, 1.05, 0.09]
+      noise:
+        type: uniform
+        params:
+          low: [-0.55, -0.35, 0]
+          high: [0.55, 0.35, 0]
+    orientation:
+      base: [0, 0, 0]
+    semantic: "robot"
+    usd_config:
+      root: /Isaac/Robots/Transporter/
+      search_depth: 0
+      filter: "transporter.usd"
+    spawn_proba: 0.5
+  - name: transporter_b
+    path: transporter_b
+    position:
+      base: [0.55, -1.05, 0.09]
+      noise:
+        type: uniform
+        params:
+          low: [-0.55, -0.35, 0]
+          high: [0.55, 0.35, 0]
+    orientation:
+      base: [0, 0, 180]
+    semantic: "robot"
+    usd_config:
+      root: /Isaac/Robots/Transporter/
+      search_depth: 0
+      filter: "transporter.usd"
+    spawn_proba: 0.5

@@ -1,0 +1,90 @@
+root_prim: racks
+generated:
+  - name: rack_a
+    path: rack_a
+    semantic: "shelf"
+    usd_config:
+      root: /NVIDIA/Assets/ArchVis/Industrial/Racks/
+      search_depth: 0
+      filter: "RackSmall_A[0-7].*"
+    position:
+      base: [-0.50, -0.80, 0]
+    orientation:
+      base: [0, 0, 0]
+    scale: [0.01, 0.01, 0.01]
+    physics:
+      collision: "convexHull"
+      rigid_body: false
+  - name: rack_b
+    path: rack_b
+    semantic: "shelf"
+    usd_config:
+      root: /NVIDIA/Assets/ArchVis/Industrial/Racks/
+      search_depth: 0
+      filter: "RackSmall_A[0-7].*"
+    position:
+      base: [0.50, -0.80, 0]
+    orientation:
+      base: [0, 0, 0]
+    scale: [0.01, 0.01, 0.01]
+    physics:
+      collision: "convexHull"
+      rigid_body: false
+  - name: rack_c
+    path: rack_c
+    semantic: "shelf"
+    usd_config:
+      root: /NVIDIA/Assets/ArchVis/Industrial/Racks/
+      search_depth: 0
+      filter: "RackSmall_A[0-7].*"
+    position:
+      base: [-0.50, -0.80, 3.01]
+    orientation:
+      base: [0, 0, 0]
+    scale: [0.01, 0.01, 0.01]
+    spawn_proba: 0.5
+    physics:
+      collision: "convexHull"
+      rigid_body: false
+  - name: rack_d
+    path: rack_d
+    semantic: "shelf"
+    usd_config:
+      root: /NVIDIA/Assets/ArchVis/Industrial/Racks/
+      search_depth: 0
+      filter: "RackSmall_A[0-7].*"
+    position:
+      base: [0.50, -0.80, 3.01]
+    orientation:
+      base: [0, 0, 0]
+    scale: [0.01, 0.01, 0.01]
+    spawn_proba: 0.5
+    physics:
+      collision: "convexHull"
+      rigid_body: false
+  - name: crate
+    path: crate
+    semantic: "crate"
+    usd_config:
+      root: /NVIDIA/Assets/ArchVis/Industrial/Containers/Wooden/
+      search_depth: 0
+      filter: "WoodenCrate_[AC].*"
+    position:
+      base: [0, 1.20, 0]
+      noise:
+        type: uniform
+        params:
+          low: [-0.50, -0.30, 0]
+          high: [0.50, 0.30, 0]
+    orientation:
+      base: [0, 0, 0]
+      noise:
+        type: uniform
+        params:
+          low: [0, 0, -180]
+          high: [0, 0, 180]
+    scale: [0.01, 0.01, 0.01]
+    physics:
+      apply_children: false
+      collision: "convexHull"
+      rigid_body: true

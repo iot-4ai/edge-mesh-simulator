@@ -1,0 +1,80 @@
+root_prim: clutter
+generated:
+  - name: wet_floor
+    path: wet_floor
+    usd_config:
+      root: /Isaac/Environments/Simple_Warehouse/Props/
+      search_depth: 0
+      filter: S_WetFloorSign.*
+    spawn_count: 2
+    spawn_proba: 0.2
+    position:
+      base: [0, 0, 0]
+      noise:
+        type: uniform
+        params:
+          low: [-1.50, -0.60, 0]
+          high: [1.50, 0.60, 0]
+    orientation:
+      base: [0, 0, 0]
+      noise:
+        type: "uniform"
+        params:
+          low: [0, 0, -180]
+          high: [0, 0, 180]
+    semantic: "hazard_sign"
+    physics:
+      collision: "convexHull"
+      rigid_body: true
+  - name: traffic_cone_right
+    path: traffic_cone_right
+    usd_config:
+      root: /Isaac/Environments/Simple_Warehouse/Props/
+      search_depth: 0
+      filter: S_TrafficCone.usd
+    spawn_count: 2
+    spawn_proba: 0.3
+    position:
+      base: [0, -1.60, 0]
+      noise:
+        type: uniform
+        params:
+          low: [-1.50, -0.20, 0]
+          high: [1.50, 0.20, 0]
+    orientation:
+      base: [0, 0, 0]
+      noise:
+        type: "uniform"
+        params:
+          low: [0, 0, -180]
+          high: [0, 0, 180]
+    semantic: "traffic_cone"
+    physics:
+      collision: "convexHull"
+      rigid_body: true
+  - name: traffic_cone_left
+    path: traffic_cone_left
+    usd_config:
+      root: /Isaac/Environments/Simple_Warehouse/Props/
+      search_depth: 0
+      filter: S_TrafficCone.usd
+    spawn_count: 2
+    spawn_proba: 0.3
+    position:
+      base: [0, 1.60, 0]
+      noise:
+        type: uniform
+        params:
+          low: [-1.50, -0.20, 0]
+          high: [1.50, 0.20, 0]
+    orientation:
+      base: [0, 0, 0]
+      noise:
+        type: "uniform"
+        params:
+          low: [0, 0, -180]
+          high: [0, 0, 180]
+    semantic: "traffic_cone"
+    physics:
+      collision: "convexHull"
+      rigid_body: true

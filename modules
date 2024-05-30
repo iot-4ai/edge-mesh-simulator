@@ -2,3 +2,5 @@ attrs
 matplotlib
 ipaddress
 perlin_noise
+click
+numpy

@@ -1,0 +1,64 @@
+- type: restrict_type
+  identifiers: ["empty"]
+  area:
+    rows: [[0, -1], [0, -1]]
+    cols: [[0, 0], [-1, -1]]
+# - type: restrict_rotation
+#   identifier: ["empty"]
+#   rotations: [0]
+#   area:
+#     rows: [[0, -1], [0, -1]]
+#     cols: [[0, 0], [-1, -1]]
+- type: exclude_type
+  identifiers: ["empty"]
+  area:
+    rows: [[1, -2], [1, -2]]
+    cols: [[1, -2], [-1, -2]]
+- type: restrict_type
+  identifiers: ["building_center"]
+  area:
+    rows: [[0, 0], [5, 5]]
+    cols: [[7, 7], [7, 7]]
+- type: restrict_rotation
+  identifier: ["building_center"]
+  rotations: [2]
+  area:
+    rows: [[0, 0], [5, 5]]
+    cols: [[7, 7], [7, 7]]
+- type: restrict_type
+  identifiers: ["building_end"]
+  area:
+    rows: [[-1, -1]]
+    cols: [[7, 7]]
+- type: restrict_rotation
+  identifier: ["building_end"]
+  rotations: [2]
+  area:
+    rows: [[-1, -1]]
+    cols: [[7, 7]]
+- type: exclude_type
+  identifiers: ["building_center", "building_end"]
+  area:
+    rows: [[0, -1], [0, -1], [1, 4], [6, 9]]
+    cols: [[0, 6], [8, -1], [7, 7], [7, 7]]
+- type: restrict_rotation
+  identifier: ["single_shelf", "double_shelf_a", "double_shelf_b"]
+  rotations: [1, 3]
+  area:
+    rows: [[0, -1]]
+    cols: [[0, -1]]
+- type: exclude_type
+  identifiers: ["double_shelf_a", "double_shelf_b"]
+  area:
+    rows: [[-1, -1]]
+    cols: [[0, -1]]
+# - type: exclude_type
+#   identifiers: ["single_shelf", "double_shelf_a", "double_shelf_b"]
+#   area:
+#     rows: [[0, -1], [0, -1], [0, -1]]
+#     cols: [[3, 3], [7, 7], [11, 11]]
+# - type: exclude_type
+#   identifiers: ["single_shelf", "double_shelf_a", "double_shelf_b"]
+#   area:
+#     rows: [[1, 1], [3, 3], [5, 5], [7, 7], [9, 9], [11, 11], [13, 13]]
+#     cols: [[0, -1], [0, -1], [0, -1], [0, -1], [0, -1], [0, -1], [0, -1]]

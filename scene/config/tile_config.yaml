@@ -1,0 +1,444 @@
+adjacencies:
+- id: empty_straight
+  neighbors:
+  - neighbor_id: empty
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 0
+    self_rotation: 2
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 3
+    self_rotation: 0
+  - neighbor_id: single_shelf
+    neighbor_rotation: 1
+    self_rotation: 2
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 3
+    self_rotation: 2
+  - neighbor_id: single_shelf
+    neighbor_rotation: 0
+    self_rotation: 2
+  - neighbor_id: single_shelf
+    neighbor_rotation: 3
+    self_rotation: 0
+  - neighbor_id: building_center
+    neighbor_rotation: 0
+    self_rotation: 1
+  - neighbor_id: building_end
+    neighbor_rotation: 0
+    self_rotation: 1
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: building_center
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: building_end
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: single_shelf
+    neighbor_rotation: 3
+    self_rotation: 2
+  - neighbor_id: empty
+    neighbor_rotation: 3
+    self_rotation: 0
+  - neighbor_id: single_shelf
+    neighbor_rotation: 2
+    self_rotation: 0
+  - neighbor_id: building_center
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: building_end
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: single_shelf
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: single_shelf
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: building_center
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: building_end
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: double_shelf_b
+    neighbor_rotation: 1
+    self_rotation: 2
+  - neighbor_id: single_shelf
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: double_shelf_b
+    neighbor_rotation: 3
+    self_rotation: 2
+  - neighbor_id: double_shelf_b
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: empty_straight
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: empty_straight
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: empty
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: double_shelf_b
+    neighbor_rotation: 3
+    self_rotation: 0
+  - neighbor_id: double_shelf_b
+    neighbor_rotation: 2
+    self_rotation: 0
+  - neighbor_id: empty_cross
+    neighbor_rotation: 0
+    self_rotation: 1
+  - neighbor_id: double_shelf_b
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: empty
+    neighbor_rotation: 1
+    self_rotation: 2
+  - neighbor_id: empty_cross
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: empty_cross
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: empty_cross
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 1
+    self_rotation: 2
+- id: empty_cross
+  neighbors:
+  - neighbor_id: empty
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: empty
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: empty
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: empty
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: empty_straight
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: building_center
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: building_end
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: empty_straight
+    neighbor_rotation: 3
+    self_rotation: 2
+  - neighbor_id: building_center
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: building_end
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: building_center
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: building_end
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: empty_straight
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: building_center
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: building_end
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: empty_straight
+    neighbor_rotation: 3
+    self_rotation: 3
+- id: double_shelf_a
+  neighbors:
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 1
+  - neighbor_id: empty
+    neighbor_rotation: 0
+    self_rotation: 1
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: building_center
+    neighbor_rotation: 0
+    self_rotation: 1
+  - neighbor_id: building_end
+    neighbor_rotation: 0
+    self_rotation: 1
+  - neighbor_id: double_shelf_b
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 3
+  - neighbor_id: empty
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: building_center
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: building_end
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: double_shelf_b
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 1
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 2
+- id: double_shelf_b
+  neighbors:
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 1
+  - neighbor_id: empty
+    neighbor_rotation: 0
+    self_rotation: 2
+  - neighbor_id: empty
+    neighbor_rotation: 2
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 3
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 1
+- id: single_shelf
+  neighbors:
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 1
+  - neighbor_id: empty
+    neighbor_rotation: 0
+    self_rotation: 1
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 3
+  - neighbor_id: empty
+    neighbor_rotation: 2
+    self_rotation: 3
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 1
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 2
+- id: building_center
+  neighbors:
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 3
+    self_rotation: 2
+  - neighbor_id: empty_straight
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: empty_cross
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 3
+    self_rotation: 2
+  - neighbor_id: empty_cross
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: empty_cross
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: empty_straight
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: empty_cross
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: empty_straight
+    neighbor_rotation: 3
+    self_rotation: 3
+- id: building_end
+  neighbors:
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 3
+    self_rotation: 2
+  - neighbor_id: empty_straight
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: empty_cross
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 3
+    self_rotation: 2
+  - neighbor_id: empty_cross
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: empty_cross
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: empty_straight
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: empty_cross
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: empty_straight
+    neighbor_rotation: 3
+    self_rotation: 3
+- id: empty
+  neighbors:
+  - neighbor_id: empty
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: empty
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 1
+  - neighbor_id: double_shelf_b
+    neighbor_rotation: 2
+    self_rotation: 0
+  - neighbor_id: double_shelf_b
+    neighbor_rotation: 0
+    self_rotation: 2
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 3
+    self_rotation: 2
+  - neighbor_id: empty_straight
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: empty
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: empty_straight
+    neighbor_rotation: 0
+    self_rotation: 3
+  - neighbor_id: single_shelf
+    neighbor_rotation: 3
+    self_rotation: 2
+  - neighbor_id: double_shelf_a
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: empty_cross
+    neighbor_rotation: 0
+    self_rotation: 0
+  - neighbor_id: empty_cross
+    neighbor_rotation: 3
+    self_rotation: 3
+  - neighbor_id: empty_cross
+    neighbor_rotation: 1
+    self_rotation: 1
+  - neighbor_id: single_shelf
+    neighbor_rotation: 1
+    self_rotation: 0
+  - neighbor_id: empty_cross
+    neighbor_rotation: 2
+    self_rotation: 2
+  - neighbor_id: empty
+    neighbor_rotation: 2
+    self_rotation: 2
+tiles:
+- id: empty_straight
+  weights:
+  - 1
+  - 1
+  - 1
+  - 1
+- id: empty_cross
+  weights:
+  - 1
+  - 1
+  - 1
+  - 1
+- id: double_shelf_a
+  weights:
+  - 1
+  - 1
+  - 1
+  - 1
+- id: double_shelf_b
+  weights:
+  - 1
+  - 1
+  - 1
+  - 1
+- id: single_shelf
+  weights:
+  - 1
+  - 1
+  - 1
+  - 1
+- id: building_center
+  weights:
+  - 1
+  - 1
+  - 1
+  - 1
+- id: building_end
+  weights:
+  - 1
+  - 1
+  - 1
+  - 1
+- id: empty
+  weights:
+  - 1
+  - 1
+  - 1
+  - 1
