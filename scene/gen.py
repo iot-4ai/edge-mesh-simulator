@@ -10,11 +10,11 @@ TILE_GEN  = PATH + "/config/tile_generation.yaml"
 CONSTRS   = PATH + "/config/constraints.yaml"
 
 @args.command()
-@args.option("--make", type=int, default=1, help="Number of scenes to generate")
-@args.option("--rows", type=int, default=11, help="Effective scene width in tiles")
-@args.option("--cols", type=int, default=15, help="Effective scene depth in tiles")
-@args.option("--show", is_flag=True, help="Show the grid solving process")
-@args.option("--seed", type=int)
+@args.option("--make", "-m", type=int, default=1, help="Number of scenes to generate")
+@args.option("--rows", "-r", type=int, default=11, help="Effective scene width in tiles")
+@args.option("--cols", "-c", type=int, default=15, help="Effective scene depth in tiles")
+@args.option("--show", "-d", is_flag=True, help="Show the grid solving process")
+@args.option("--seed", "-s", type=int)
 def gen(make, rows, cols, show, seed):
 	app = SimulationApp()
 
@@ -50,10 +50,11 @@ def gen(make, rows, cols, show, seed):
 		print(f"Grid {n+1} solved in {tries+1} tr{'ies' if tries else 'y'}")
 		out_path = path.join(PATH, f"scene-{n+1}.usd")
 		world.reset()
+		print("Generating scene...")
 		generator.generate_scene(grid, world, out_path)
 		grid.reset(superpos)
 		close_stage(); world.clear_instance()
-
+		print("Done!")
 	app.close()
 
 gen()
