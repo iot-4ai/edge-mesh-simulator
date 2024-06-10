@@ -1,9 +1,9 @@
-import numpy as np
+import numpy as num
 import matplotlib.pyplot as plot
 from matplotlib.patches import Rectangle
+from random import uniform, getrandbits as choose
 from attrs import define, Factory as new
 from itertools import cycle
-
 
 @define
 class Partition:
@@ -18,39 +18,24 @@ class Partition:
 
 def cutHori(node):
     if node.height > MIN:
-        midY = node.y + node.height / 2
-        rangeY = node.height / 4  # Define a range around the middle for randomness
-        cutY = int(
-            np.clip(
-                midY + np.random.uniform(-rangeY, rangeY),
-                node.y + MIN,
-                node.y + node.height - MIN,
-            )
-        )
+        cutY = int(uniform(node.y, node.y + node.height))
 
         topHeight = cutY - node.y -1
-        botHeight = node.height - (cutY - node.y)-1 
-        if topHeight > MIN/3:
+        botHeight = node.height - (cutY - node.y)-1
+        if topHeight > CUTOFF:
             node.children.append(Partition(node.x, node.y, node.width, topHeight))
-        if botHeight > MIN/3:
+        if botHeight > CUTOFF:
             node.children.append(Partition(node.x, cutY+1, node.width, botHeight))
 
 def cutVert(node):
     if node.width > MIN:
-        midX = node.x + node.width / 2
-        rangeX = node.width / 4  # Define a range around the middle for randomness
-        cutX = int(
-            np.clip(
-                midX + np.random.uniform(-rangeX, rangeX),
-                node.x + MIN,
-                node.x + node.width - MIN,
-            )
-        )
+        cutX = int(uniform(node.x, node.x + node.width))
+
         leftWidth = cutX - node.x -1
         rightWidth = node.width - (cutX - node.x)-1
-        if leftWidth > MIN/3:
+        if leftWidth > CUTOFF:
             node.children.append(Partition(node.x, node.y, leftWidth, node.height))
-        if rightWidth > MIN/3:
+        if rightWidth > CUTOFF:
             node.children.append(Partition(cutX+1, node.y, rightWidth, node.height))
 
 def divide(node, depth=0):
@@ -58,8 +43,10 @@ def divide(node, depth=0):
         return  # No need to divide further
 
     # Randomly decide to cut horizontally or vertically
-    if np.random.rand() > 0.5: cutHori(node)
-    else: cutVert(node)
+    if node.width == W: cutVert(node)
+    elif node.height == H: cutHori(node)
+    else:
+        cutHori(node) if choose(1) else cutVert(node)
 
     for child in node.children: # Recursively parition
         divide(child, depth + 1)
@@ -84,7 +71,7 @@ def drawAQT(ax, node):
             node.width,
             node.height,
             edgecolor="none",
-            facecolor=next(colors)
+            facecolor=next(COL)
         )
         ax.add_patch(rect)
     else:
@@ -95,20 +82,32 @@ def getDeepest(node, depth=0):
     if node.isLeaf(): return depth
     return max(getDeepest(child, depth + 1) for child in node.children)
 
-width, height, MIN = 150, 200, 20
-AQT = buildAQT(width, height)
+# defaults
+COL = cycle('rgbcmk')
+W, H, MIN = 150, 200, 30
+CUTOFF = MIN/4
 
-colors = cycle('rgbcmk')
-printAQT(AQT)
+def setup(AQT):
+    toolbar = plot.get_current_fig_manager().toolbar
+    [toolbar.removeAction(x) for x in toolbar.actions()]
 
-fig, ax = plot.subplots(1, figsize=(8, 8))
-ax.set_xticks([]); ax.set_yticks([])
-ax.set_xlim(0, width); ax.set_ylim(0, height)
-ax.set_aspect("equal")
+    fig, ax = plot.subplots(1, figsize=(8, 8))
+    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlim(0, AQT.width); ax.set_ylim(0, AQT.height)
+    plot.gca().invert_yaxis()
+    ax.set_aspect("equal")
+    return fig, ax
 
-toolbar = plot.get_current_fig_manager().toolbar
-[toolbar.removeAction(x) for x in toolbar.actions()]
+def run(AQT, debug=False, close=True):
+    if debug: printAQT(AQT)
+    fig, ax = setup(AQT)
 
-drawAQT(ax, AQT)
-plot.gca().invert_yaxis()
-plot.show()
+    drawAQT(ax, AQT)
+    plot.show(block=False)
+    plot.pause(1)
+    if close: plot.close()
+
+def save(AQT, filename=None):
+    fig, ax = setup(AQT)
+    drawAQT(ax, AQT)
+    if filename: plot.savefig(filename)
