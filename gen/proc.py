@@ -1,4 +1,3 @@
-import numpy as num
 import matplotlib.pyplot as plot
 from matplotlib.patches import Rectangle
 from random import uniform, getrandbits as choose
@@ -12,7 +11,7 @@ class Partition:
     width: int
     height: int
     children: list = new(list)
-    
+
     def isLeaf(self):
         return len(self.children) == 0
 
@@ -44,7 +43,7 @@ def divide(node, depth=0):
 
     # Randomly decide to cut horizontally or vertically
     if node.width == W: cutVert(node)
-    elif node.height == H: cutHori(node)
+    elif node.height == D: cutHori(node)
     else:
         cutHori(node) if choose(1) else cutVert(node)
 
@@ -83,16 +82,17 @@ def getDeepest(node, depth=0):
     return max(getDeepest(child, depth + 1) for child in node.children)
 
 # defaults
-COL = cycle('rgbcmk')
-W, H, MIN = 150, 200, 30
+COL = cycle("rgbcmk")
+W, D, MIN = 150, 200, 30
 CUTOFF = MIN/4
 
 def setup(AQT):
-    toolbar = plot.get_current_fig_manager().toolbar
-    [toolbar.removeAction(x) for x in toolbar.actions()]
+    # toolbar = plot.get_current_fig_manager().toolbar
+    # [toolbar.removeAction(x) for x in toolbar.actions()]
 
     fig, ax = plot.subplots(1, figsize=(8, 8))
     ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlabel(f"W = {W}"); ax.set_ylabel(f"D = {D}")
     ax.set_xlim(0, AQT.width); ax.set_ylim(0, AQT.height)
     plot.gca().invert_yaxis()
     ax.set_aspect("equal")

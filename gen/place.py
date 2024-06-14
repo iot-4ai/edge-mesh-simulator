@@ -5,15 +5,15 @@ from random import randrange as randRange, random
 from collections import deque
 from math import sqrt
 
-def normFreq(freq):
-    ele = list(freq.keys())
-    prob = list(freq.values())
+def normFreq(FREQ):
+    ele = list(FREQ.keys())
+    prob = list(FREQ.values())
     val = sum(prob)
     ret = [v / val for v in prob]
     return ele, ret
 
-def pickFreq(freq):
-    ele, prob = normFreq(freq)
+def pickFreq(FREQ):
+    ele, prob = normFreq(FREQ)
     return choose(ele, p=prob)
 
 def dist(p1, p2):
@@ -144,17 +144,17 @@ def buildDriver(node, grid, num):
     if num == 0: return grid
     return buildRegion(node, grid, num)
 
-def exportAQT(node, grid, freq):
+def exportAQT(node, grid, FREQ):
     if node.isLeaf():
-        choice = pickFreq(freq)
+        choice = pickFreq(FREQ)
         buildDriver(node, grid, choice)
     else:
         for child in node.children:
-            exportAQT(child, grid, freq)
+            exportAQT(child, grid, FREQ)
 
-def gridAQT(width, height, root, freq):
+def gridAQT(width, height, root, FREQ) -> num.ndarray:
     grid = num.zeros((height, width), dtype=int)
-    exportAQT(root, grid, freq)
+    exportAQT(root, grid, FREQ)
     return grid
 
 def gridToFile(grid, filename):
@@ -163,17 +163,17 @@ def gridToFile(grid, filename):
         for row in grid:
             file.write("".join(char_map[str(val)] for val in row) + "\n")
 
-# proc.W, proc.H, proc.MIN = 150, 200, 30
+# proc.W, proc.D, proc.MIN = 150, 200, 30
 # proc.CUTOFF = proc.MIN / 4
-freq = {0: 0, 1: 50, 2: 40, 3: 10}
+FREQ = {0: 0, 1: 50, 2: 40, 3: 10}
 
-AQT = proc.buildAQT(proc.W, proc.H)
-array = gridAQT(proc.W, proc.H, AQT, freq)
-gridToFile(array, "array.out")
+# AQT = proc.buildAQT(proc.W, proc.D)
+# rep: num.ndarray = gridAQT(proc.W, proc.D, AQT, FREQ)
+# gridToFile(rep, "array.out")
 
-exit()
+# exit()
 # (optional) visualize:
-for i in range(5):
-	AQT = proc.buildAQT(proc.W, proc.H)
-	proc.run(AQT)
-	proc.save(AQT, f"fig-{i}.png")
+# for i in range(5):
+	# AQT = proc.buildAQT(proc.W, proc.D)
+	# proc.run(AQT)
+	# proc.save(AQT, f"fig-{i}.png")
