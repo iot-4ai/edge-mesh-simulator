@@ -5,17 +5,15 @@ from random import randint as randInt, random as rand, \
 getrandbits as choose, choice, shuffle, uniform
 import numpy as num
 from typing import *
+from nptyping import NDArray
 from scipy.stats import qmc
-from sys import path
-path.append("../gen")
-import place, proc # type: ignore
 import matplotlib.pyplot as plot
 from matplotlib.colors import ListedColormap
-
 
 Signal = data("Signal", ["stren", "atten"])
 Coord  = data("Coord", ["x", "y", "z"])
 Rot    = data("Rot", ["p", "y", "r"])
+trunc = lambda x: round(x, 3)
 
 @define
 class BLE:
@@ -57,7 +55,10 @@ class Chunk:
     height: int
     nodes: List[str] = default(list)
 
-def makeChunk(kind: int) -> Chunk:
+type Scene = \
+NDArray[(int, int), Chunk] # type: ignore
+
+def _makeChunk(kind: int) -> Chunk:
     height = 0
     match kind:
         case 0: height = 0
@@ -66,7 +67,7 @@ def makeChunk(kind: int) -> Chunk:
         case 3: height = H
     return Chunk(kind, height)
 
-def makeNodes(chunk: Chunk, x, y, node: bool):
+def _makeNodes(chunk: Chunk, x, y, node: bool):
     free = z = None
     if node:
         match chunk.kind:
@@ -82,10 +83,11 @@ def makeNodes(chunk: Chunk, x, y, node: bool):
                         if chunk.height < H:
                             z = chunk.height; free = d
                         break
-                    pos = tuple(num.add(d, (x,y))) # bounds check (inverted): 
-                    if not (0 <= pos[0] < proc.D and 0 <= pos[1] < proc.W): continue
-                    if chunk.height > chunks[pos].height: #type: ignore
-                        z = randInt(chunks[pos].height+1, chunk.height) #type: ignore
+                    pos = tuple(num.add(d, (x,y))) 
+                    W, D = _chunks.shape # bounds check (inverted):
+                    if not (0 <= pos[0] < W and 0 <= pos[1] < D): continue
+                    if chunk.height > _chunks[pos].height: #type: ignore
+                        z = randInt(_chunks[pos].height+1, chunk.height) #type: ignore
                         free = d
                         break
     if free: 
@@ -100,17 +102,20 @@ def makeNodes(chunk: Chunk, x, y, node: bool):
             case (0, 1): yaw = uniform(180, 360) # S
         if type(free) is tuple: pitch = uniform(90, 180)
 
-        name = f"C{makeNodes.nth:03}"
+        name = f"C{_makeNodes.nth:03}"
         MESH[name] = Controller(
             name, BLE(), Coord(x, y, z), Rot(pitch, yaw, roll),
         ) # type: ignore
-        makeNodes.nth += 1
+        _makeNodes.nth += 1
         chunk.nodes.append(name)
 
     return chunk
-makeNodes.nth = 0
+_makeNodes.nth = 0
 
-def genPoints(x, y, r=5, n=None):
+type Grid = \
+NDArray[(int, int), Primitive] # type: ignore
+
+def genPoints(x, y, r=5, n=None) -> Grid:
     sample = qmc.PoissonDisk(d=2, radius=r / min(x, y)).fill_space()
     sample[:, 0], sample[:, 1] = sample[:, 0] * x, sample[:, 1] * y # scale: fit
     N = len(sample)
@@ -118,41 +123,36 @@ def genPoints(x, y, r=5, n=None):
     indices = num.random.choice(N, min(n, N), replace=False)
     points = sample[indices].astype(int)
 
-    array = num.zeros((y, x), dtype=bool)
+    array: Grid = num.zeros((y, x), dtype=bool)
     # Represent points as bool:
     array[points[:, 1], points[:, 0]] = True
 
     return array
 
-# proc.W, proc.D, proc.MIN = 150, 200, 30
+def _showFig(kinds):
+    global plot
+    # Get updated nodes from SCENE
+    new_nodes = num.argwhere(num.vectorize(lambda x: bool(x.nodes))(SCENE))
+
+    _, ax = plot.subplots(figsize=(8, 8))
+    ax.imshow(kinds, cmap=ListedColormap(COL), origin="lower")
+    ax.scatter(new_nodes[:, 1], new_nodes[:, 0], color="royalblue", s=10)
+
+    D, W = SCENE.shape
+    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlabel(f"W = {W}"); ax.set_ylabel(f"D = {D}")
+    plot.gca().invert_yaxis()
+    plot.tight_layout()
+    plot.show(block=False)
+
 H = 20
-# proc.CUTOFF = proc.MIN / 4
-# place.FREQ = {0: 0, 1: 50, 2: 40, 3: 10}
-
-regions = proc.buildAQT(proc.W, proc.D)
-kinds: num.ndarray = place.gridAQT(proc.W, proc.D, regions, place.FREQ)
-nodes: num.ndarray = genPoints(proc.W, proc.D)
-
 MESH: Dict[str, Controller] = {}
-chunks: num.ndarray = num.vectorize(makeChunk)(kinds)
-Xs, Ys = num.indices(chunks.shape) # extract indices
-SCENE: num.ndarray = num.vectorize(makeNodes)(chunks, Xs, Ys, nodes)
+SCENE: Scene; _chunks: Scene
 
-for c in MESH.values(): # test
-    print(f"Controller {c.name}:")
-    print(f"\tType: {c.comm}")
-    print(f"\tPosition: {c.pos}")
-    print(f"\tFacing: {c.orient}")
-    print(f"\tSignal: {c.signal}", end="\n\n")
+def init(kinds: Grid, nodes: Grid, show=False):
+    global SCENE, _chunks
+    _chunks = num.vectorize(_makeChunk)(kinds)
+    Xs, Ys = num.indices(_chunks.shape) # extract indices
+    SCENE = num.vectorize(_makeNodes)(_chunks, Xs, Ys, nodes)
 
-# Get updated nodes from SCENE
-new_nodes = num.argwhere(num.vectorize(lambda x: bool(x.nodes))(SCENE))
-
-fig, ax = plot.subplots(figsize=(8, 8))
-ax.imshow(kinds, cmap=ListedColormap(COL), origin="lower")
-ax.scatter(new_nodes[:, 1], new_nodes[:, 0], color="royalblue", s=10)
-
-ax.set_xticks([]); ax.set_yticks([])
-ax.set_xlabel(f"W = {proc.W}"); ax.set_ylabel(f"D = {proc.D}")
-plot.tight_layout()
-plot.show()
+    if show: _showFig(kinds)
