@@ -9,11 +9,19 @@ from nptyping import NDArray
 from scipy.stats import qmc
 import matplotlib.pyplot as plot
 from matplotlib.colors import ListedColormap
+from functools import partial
 
 Signal = data("Signal", ["stren", "atten"])
-Coord  = data("Coord", ["x", "y", "z"])
-Rot    = data("Rot", ["p", "y", "r"])
-trunc = lambda x: round(x, 3)
+
+
+@define
+class Coord:
+    x: int; y: int; z: int
+
+@define
+class Rot:
+    _trunc = partial(field, converter=lambda x: round(x, 3))
+    p: float = _trunc(); y: float = _trunc(); r: float = _trunc()
 
 @define
 class BLE:
@@ -40,7 +48,7 @@ class Controller:
     def genIPv6(self) -> str:
         return str(IPv6Address(choose(128))).upper()
 
-KIND_MAP = {
+KINDS = {
     0: "empty",
     1: "shelf",
     2: "pile",
@@ -51,30 +59,29 @@ COL = \
 
 @define
 class Chunk:
-    kind: int
+    kind: str
     height: int
     nodes: List[str] = default(list)
 
-type Scene = \
-NDArray[(int, int), Chunk] # type: ignore
+def _makeHeights(kind: int) -> int:
+    return {
+        "empty": 0,
+        "shelf": H // 2,
+        "pile": randInt(1, H // 4),
+        "wall": H
+    }[KINDS[kind]]
 
-def _makeChunk(kind: int) -> Chunk:
-    height = 0
-    match kind:
-        case 0: height = 0
-        case 1: height = H // 2
-        case 2: height = randInt(1, H // 4)
-        case 3: height = H
-    return Chunk(kind, height)
+def _makeChunk(kind: int, height: int) -> Chunk:
+    return Chunk(KINDS[kind], height)
 
 def _makeNodes(chunk: Chunk, x, y, node: bool):
-    free = z = None
+    free = None; z = 0
     if node:
         match chunk.kind:
-            case 0: 
+            case "empty": 
                 z = choice([0, H])
                 free = "ciel" if z == H else "floor"
-            case 1|2|3: 
+            case "shelf" | "pile" | "wall": 
                 # (0, 0) is top left (2D rep)
                 dirs = [(0, 1), (0, -1), (1, 0), (-1, 0), "top"]
                 shuffle(dirs)
@@ -91,7 +98,7 @@ def _makeNodes(chunk: Chunk, x, y, node: bool):
                         free = d
                         break
     if free: 
-        pitch, yaw, roll = None, None, rand()*360
+        pitch, yaw, roll = 0, 0, rand()*360
         match free:
             case "ciel": pitch, yaw = uniform(60, -240), uniform(60, -240)
             case "floor": pitch, yaw = uniform(-60, 240), uniform(-60, 240)
@@ -102,7 +109,7 @@ def _makeNodes(chunk: Chunk, x, y, node: bool):
             case (0, 1): yaw = uniform(180, 360) # S
         if type(free) is tuple: pitch = uniform(90, 180)
 
-        name = f"C{_makeNodes.nth:03}"
+        name = f"C{_makeNodes.nth:0{len(str(_maxN))}d}"
         MESH[name] = Controller(
             name, BLE(), Coord(x, y, z), Rot(pitch, yaw, roll),
         ) # type: ignore
@@ -111,15 +118,16 @@ def _makeNodes(chunk: Chunk, x, y, node: bool):
 
     return chunk
 _makeNodes.nth = 0
+_maxN = 0
 
-type Grid = \
-NDArray[(int, int), Primitive] # type: ignore
+type Grid[T] = NDArray[(int, int), T] # type: ignore
 
 def genPoints(x, y, r=5, n=None) -> Grid:
     sample = qmc.PoissonDisk(d=2, radius=r / min(x, y)).fill_space()
     sample[:, 0], sample[:, 1] = sample[:, 0] * x, sample[:, 1] * y # scale: fit
     N = len(sample)
     if not n: n = N // 4
+    global _maxN; _maxN = n
     indices = num.random.choice(N, min(n, N), replace=False)
     points = sample[indices].astype(int)
 
@@ -130,7 +138,6 @@ def genPoints(x, y, r=5, n=None) -> Grid:
     return array
 
 def _showFig(kinds):
-    global plot
     # Get updated nodes from SCENE
     new_nodes = num.argwhere(num.vectorize(lambda x: bool(x.nodes))(SCENE))
 
@@ -147,11 +154,13 @@ def _showFig(kinds):
 
 H = 20
 MESH: Dict[str, Controller] = {}
-SCENE: Scene; _chunks: Scene
+SCENE: Grid[Chunk]; _chunks: Grid[Chunk]; heights: Grid[int]
 
-def init(kinds: Grid, nodes: Grid, show=False):
-    global SCENE, _chunks
-    _chunks = num.vectorize(_makeChunk)(kinds)
+def init(kinds: Grid[int], nodes: Grid[bool], show=False):
+    global SCENE, _chunks, heights
+    heights = num.vectorize(_makeHeights)(kinds)
+    _chunks = num.vectorize(_makeChunk)(kinds, heights)
+
     Xs, Ys = num.indices(_chunks.shape) # extract indices
     SCENE = num.vectorize(_makeNodes)(_chunks, Xs, Ys, nodes)
 

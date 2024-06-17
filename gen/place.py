@@ -134,8 +134,7 @@ def _pillars(grid, start, end):
     grid[y_end - 1, x_start] = 3 # bottom-left corner
     grid[y_end - 1, x_end - 1] = 3 # bottom-right corner
 
-type Grid = \
-NDArray[(int, int), Primitive] # type: ignore
+type Grid[T] = NDArray[(int, int), T] # type: ignore
 
 def features(width, height, root, FREQ) -> Grid:
     grid: Grid = num.zeros((height, width), dtype=int)
