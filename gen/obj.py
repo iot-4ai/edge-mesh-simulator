@@ -3,46 +3,59 @@ from random import random, uniform
 from itertools import cycle
 from sys import argv as args
 import numpy as num
-from subprocess import getoutput as run
 from time import time
+from sys import stdout
 
 b.ops.object.select_all(action="SELECT")
 b.ops.object.delete()
 obstacles = b.data.objects.new("Obstacles", b.data.meshes.new("Obstacles") )
 b.context.collection.objects.link(obstacles)
 
-colors = {
-    "shelf": (0.8039, 0.5216, 0.24706, 1),
-    "pile": (0.62745, 0.32157, 0.17647, 1)
+KINDS = {
+    0: "empty",
+    1: "shelf",
+    2: "pile",
+    3: "wall",
 }
 
-mats = {c: b.data.materials.new(name=c) for c in colors}
-for c, m in mats.items(): m.diffuse_color = colors[c]
+COL = {
+    "shelf": (0.8039, 0.5216, 0.24706, 1),
+    "pile": (0.62745, 0.32157, 0.17647, 1),
+    "wall": (0.6, 0.6, 0.6, 1)
+}
 
-# path = args[5] # 1st arg
-# run(f"notify-send {path}")
-path = "/tmp/tmpr5am5ojs"
+mats = {c: b.data.materials.new(name=c) for c in COL}
+for c, m in mats.items(): m.diffuse_color = COL[c]
 
-grid = num.load(path)
-rows, cols = grid["k"].shape
+data = args[5] # 1st arg
+grid = num.load(data)
+cols, rows = grid["k"].shape
 
 start = time()
 for x in range(rows):
-    print(f"{x/rows:.2%}")
-    for y in range(cols):
-        if grid["k"][y, x] == "empty": continue
-        b.ops.mesh.primitive_cube_add(size=1, location=(x+0.5, y+0.5, 0))
-        cube = b.context.active_object
-        height = grid["h"][y, x]
-        cube.scale[2] = height
-        cube.location[2] += height / 2
-        # cube.data.materials.append(next(mats))
+    print(f"{x/rows:.2f}")
+    stdout.flush()
 
-        cube.select_set(True)
+    for y in range(cols):
+        if KINDS[grid["k"][y, x]] == "empty": continue
+        b.ops.mesh.primitive_cube_add(size=1, location=(x+0.5, y+0.5, 0))
+        height = grid["h"][y, x]
+        cube = b.context.active_object
+        if cube:
+            cube.scale[2] = height
+            cube.location[2] += height / 2
+            cube.data.materials.append(mats[KINDS[grid["k"][y, x]]]) # type: ignore
+
+            cube.select_set(True)
         obstacles.select_set(True)
         b.context.view_layer.objects.active = obstacles
         b.ops.object.join()
         obstacles.select_set(False)
+
+b.ops.object.editmode_toggle()
+b.ops.mesh.select_all(action="SELECT")
+b.ops.mesh.remove_doubles()
+b.ops.object.editmode_toggle()
 
 # b.ops.mesh.primitive_cube_add(size=X)
 # walls = b.context.active_object # floor & walls
@@ -61,9 +74,5 @@ for x in range(rows):
 
 b.context.view_layer.update()
 
-# n = args[5] # 1st script arg
-# b.ops.export_scene.gltf(filepath=f"{cwd()}/scene-{n}")
-
-end = time()
-
-print(f"Took {end-start:.2f}s")
+out = args[6]
+b.ops.export_scene.gltf(filepath=f"{out}/scene")

@@ -1,12 +1,13 @@
 from gen.proc import *; from gen.place import *
-# from sim.rep import *
 import sim.rep as sim
 
 from typing import *
 import matplotlib.pyplot as plot
-from subprocess import getoutput as run
+from subprocess import Popen, PIPE, DEVNULL
 from numpy import savez_compressed as export
 from tempfile import NamedTemporaryFile 
+from os import getcwd as cwd, path
+from contextlib import suppress
 
 
 plot.rcParams["toolbar"] = "None"
@@ -25,4 +26,11 @@ plot.close()
 tmp = NamedTemporaryFile(delete=False)
 export(tmp, k=kinds, h=sim.heights)
 
-out = run(f"blender -b -P b.py -- {tmp.name}")
+print(tmp.name)
+
+out = path.join(cwd(), "vis", "assets")
+proc = Popen(["blender", "-b", "-P", "gen/obj.py", "--", tmp.name, out], stdout=PIPE, stderr=DEVNULL)
+
+for line in proc.stdout: # type: ignore
+    prog = line.decode().strip()
+    with suppress(ValueError): print(f"{float(prog):.1%}")
