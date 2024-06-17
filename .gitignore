@@ -5,3 +5,4 @@ __pycache__/
 *.glb
 *.out
 *.png
+node_modules/
