@@ -8,12 +8,15 @@ from subprocess import Popen, PIPE, DEVNULL
 from numpy import savez_compressed as export
 from tempfile import NamedTemporaryFile 
 from os import getcwd as cwd, path, remove
-from contextlib import suppress
+from contextlib import suppress, asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
 from rich import print
+import toml
 import uvicorn
+
+config = toml.load('config.toml')
 
 @define
 class Timer:
@@ -22,7 +25,7 @@ class Timer:
     def __str__(self):
         return f"{time() - self._start:.2f}s"
 
-def main(size=(50,50), n_nodes=None, comm_type="BLE"):
+def main(size=(50,50), n_nodes=0, comm_type="BLE"):
     global W, D
     if size: W, D = size
     sim.TYPE = comm_type
@@ -64,7 +67,13 @@ def main(size=(50,50), n_nodes=None, comm_type="BLE"):
     remove(tmp.name)
 
 # API
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    main((config['width'], config['height']), config['nodes'], config['comm'])
+    app.MESH = sim.MESH
+    yield 
+
+app = FastAPI(lifespan=lifespan)
 origins = [
     "http://localhost:5173",
     "http://localhost:8000",
@@ -84,8 +93,7 @@ def get_root():
     
 @app.get("/controllers")
 async def controllers():
-    return [x.toJson() for x in sim.MESH.values()]
+    return [x.toJson() for x in app.MESH.values()]
 
 if __name__ == "__main__":
-    main()
     uvicorn.run("__main__:app", host="localhost", port=8000, reload=True)
