@@ -1,0 +1,7 @@
+{
+	"recommendations": [
+		"jacqueslucke.blender-development",
+		"charliermarsh.ruff",
+		"eeyore.yapf"
+	]
+}

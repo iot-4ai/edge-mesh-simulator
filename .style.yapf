@@ -1,0 +1,13 @@
+[style] # I have opinions
+
+based_on_style = pep8
+column_limit = 90
+use_tabs = false
+blank_lines_around_top_level_definition = 1
+continuation_align_style=fixed
+coalesce_brackets=true
+dedent_closing_brackets=true
+join_multiple_lines=true
+# split_all_comma_separated_values = true
+no_spaces_around_selected_binary_operators = "^,/,*,**"
+split_before_dot=true

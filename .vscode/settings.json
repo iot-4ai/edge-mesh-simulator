@@ -1,0 +1,14 @@
+{
+	"editor.rulers": [90],
+	"editor.insertSpaces": true,
+	"[python]": {
+		"editor.defaultFormatter": "eeyore.yapf",
+		"editor.formatOnSave": true,
+	},
+	"yapf.args": ["--style", ".style.yapf"],
+	"python.analysis.typeCheckingMode": "basic",
+	"python.analysis.autoFormatStrings": true,
+	"files.exclude": {
+		"**/__pycache__": true,
+	}, 
+}
