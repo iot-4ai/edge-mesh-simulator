@@ -26,13 +26,31 @@ class Rot:
 class BLE:
     ver: str = "5.3"
 
+    def toJson(self):
+        return {
+            "type": "BLE",
+            "ver": self.ver
+        }
+
 @define
 class Radio:
     mod_type: str = "QAM"
 
+    def toJson(self):
+        return {
+            "type": "Radio",
+            "ver": self.mod_type
+        }
+
 @define
 class WiFi:
     freq_band: str = "<6 GHz"
+
+    def toJson(self):
+        return {
+            "type": "WiFi",
+            "ver": self.freq_band
+        }
 
 @define
 class Controller:
@@ -46,6 +64,16 @@ class Controller:
     @ip.default # type: ignore
     def genIPv6(self) -> str:
         return str(IPv6Address(choose(128))).upper()
+    
+    def toJson(self):
+        return {
+            "name": self.name,
+            "comm": self.comm.toJson(),
+            "pos": {"x": self.pos.x, "y": self.pos.y, "z": self.pos.z},
+            "orient": {"pitch": self.orient.p, "yaw": self.orient.y, "roll": self.orient.r},
+            "ip": self.ip,
+            "signal": self.signal.value if self.signal else None
+        }
 
 KINDS = {
     0: "empty",

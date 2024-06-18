@@ -38,7 +38,7 @@ for x in range(rows):
 
     for y in range(cols):
         if KINDS[grid["k"][y, x]] == "empty": continue
-        b.ops.mesh.primitive_cube_add(size=1, location=(x+0.5, y+0.5, 0))
+        b.ops.mesh.primitive_cube_add(size=1, location=(y+0.5, x+0.5, 0))
         height = grid["h"][y, x]
         cube = b.context.active_object
         if cube:

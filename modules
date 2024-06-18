@@ -5,3 +5,6 @@ perlin_noise
 click
 numpy
 rich
+scipy
+fastapi
+uvicorn

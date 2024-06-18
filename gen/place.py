@@ -8,6 +8,7 @@ from math import sqrt
 
 
 FREQ = {0: 0, 1: 50, 2: 40, 3: 10}
+rects = []
 
 def _normFreq(FREQ):
     ele = list(FREQ.keys())
@@ -84,6 +85,18 @@ def _horiShelf(grid, dim, start, options):
         for loc in range(x + gap, x + cur, gap):
             if x + cur - loc > 2:
                 grid[i, loc] = 0
+        started = False
+        for j in range(x, x + cur):
+            if grid[i, j] == 1:
+                if not started:
+                    started = True
+                    rect_x = j
+                    w = 1
+                else:
+                    w += 1
+            elif started:
+                rects.append(("Shelf", i, rect_x, 1, w))
+                started = False
         if extra and flag:
             i += 1; flag = False
         else: i += spacing; flag = extra
@@ -101,11 +114,23 @@ def _vertShelf(grid, dim, start, options):
                 grid[loc - gap : loc + 1, i] = 0
             elif y + cur - loc > 2:
                 grid[loc, i] = 0
+        started = False
+        for j in range(y, y + cur):
+            if grid[j, i] == 1:
+                if not started:
+                    started = True
+                    rect_y = j
+                    h = 1
+                else:
+                    h += 1
+            elif started:
+                rects.append(("Shelf", rect_y, i, h, 1))
+                started = False
         if extra and flag:
             i += 1; flag = False
         else: i += spacing; flag = extra
 
-def _shelves(grid, dim, start, num):
+def _shelves(grid, dim, start):
     y, x, y_max, x_max = start[0], start[1], dim[0], dim[1]
     spacing = choose([2, 3, 4])
     gap = choose([5, 6, 7])
@@ -125,7 +150,7 @@ def _pile(grid, dim, start, num):
         target = 20
         vals = _weightedBFS((y_range, x_range), bounds, target, weight=1.25)
         _placeChunk(grid, vals, num)
-    _shelves(grid, dim, start, 1)
+    _shelves(grid, dim, start)
 
 def _pillars(grid, start, end):
     y_start, x_start, y_end, x_end = start[0], start[1], end[0], end[1]
@@ -143,9 +168,12 @@ def features(width, height, root, FREQ) -> Grid:
         y, x = node.y, node.x
         dim = (y + node.height, x + node.width)
         match num:
-            case 1: _shelves(grid, dim, (y, x), num)
+            case 1: _shelves(grid, dim, (y, x))
             case 2: _pile(grid, dim, (y, x), num)
-            case 3: grid[y : dim[0], x : dim[1]] = num
+            case 3: 
+                grid[y : dim[0], x : dim[1]] = num
+                rects.append(("Block", y, x, dim[0], dim[1]))
+
         _pillars(grid, (y, x), dim)
 
     def fillRegions(node):
