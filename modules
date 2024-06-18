@@ -4,3 +4,4 @@ ipaddress
 perlin_noise
 click
 numpy
+rich

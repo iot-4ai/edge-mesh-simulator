@@ -76,3 +76,4 @@ b.context.view_layer.update()
 
 out = args[6]
 b.ops.export_scene.gltf(filepath=f"{out}/scene")
+print("1.0") # done

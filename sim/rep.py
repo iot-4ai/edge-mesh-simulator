@@ -13,7 +13,6 @@ from functools import partial
 
 Signal = data("Signal", ["stren", "atten"])
 
-
 @define
 class Coord:
     x: int; y: int; z: int
@@ -111,7 +110,7 @@ def _makeNodes(chunk: Chunk, x, y, node: bool):
 
         name = f"C{_makeNodes.nth:0{len(str(_maxN))}d}"
         MESH[name] = Controller(
-            name, BLE(), Coord(x, y, z), Rot(pitch, yaw, roll),
+            name, globals()[TYPE](), Coord(x, y, z), Rot(pitch, yaw, roll),
         ) # type: ignore
         _makeNodes.nth += 1
         chunk.nodes.append(name)
@@ -153,6 +152,7 @@ def _showFig(kinds):
     plot.show(block=False)
 
 H = 20
+TYPE: str = ""
 MESH: Dict[str, Controller] = {}
 SCENE: Grid[Chunk]; _chunks: Grid[Chunk]; heights: Grid[int]
 

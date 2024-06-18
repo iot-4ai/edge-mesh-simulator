@@ -98,6 +98,7 @@ def _showFig(AQT):
     ax = _figSetup(AQT)
     _drawRegions(ax, AQT)
     plot.show(block=False)
+    plot.pause(1)
 
 def _saveFig(AQT, name=None):
     ax = _figSetup(AQT)
