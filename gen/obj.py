@@ -1,4 +1,4 @@
-import bpy as b, bmesh
+import bpy as b, bmesh # type: ignore
 from random import random, uniform
 from itertools import cycle
 from sys import argv as args
@@ -24,6 +24,7 @@ COL = {
     "wall": (0.6, 0.6, 0.6, 1)
 }
 
+# Make materials as per color dict
 mats = {c: b.data.materials.new(name=c) for c in COL}
 for c, m in mats.items(): m.diffuse_color = COL[c]
 
@@ -41,17 +42,19 @@ for x in range(rows):
         b.ops.mesh.primitive_cube_add(size=1, location=(y+0.5, x+0.5, 0))
         height = grid["h"][y, x]
         cube = b.context.active_object
-        if cube:
+        if cube: # scale to height, apply mat:
             cube.scale[2] = height
             cube.location[2] += height / 2
             cube.data.materials.append(mats[KINDS[grid["k"][y, x]]]) # type: ignore
-
             cube.select_set(True)
+
+        # Combine into one mesh
         obstacles.select_set(True)
         b.context.view_layer.objects.active = obstacles
         b.ops.object.join()
         obstacles.select_set(False)
 
+# Mesh cleanup (deduplicate vertices)
 b.ops.object.editmode_toggle()
 b.ops.mesh.select_all(action="SELECT")
 b.ops.mesh.remove_doubles()

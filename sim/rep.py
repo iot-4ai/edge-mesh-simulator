@@ -72,7 +72,7 @@ class Controller:
             "pos": {"x": self.pos.x, "y": self.pos.y, "z": self.pos.z},
             "orient": {"pitch": self.orient.p, "yaw": self.orient.y, "roll": self.orient.r},
             "ip": self.ip,
-            "signal": self.signal.value if self.signal else None
+            "signal": self.signal.value if self.signal else None # type: ignore
         }
 
 KINDS = {
@@ -155,6 +155,7 @@ def genPoints(x, y, r=5, n=None) -> Grid:
     N = len(sample)
     if not n: n = N // 4
     global _maxN; _maxN = n
+    # Select points to reduce uniformity:
     indices = num.random.choice(N, min(n, N), replace=False)
     points = sample[indices].astype(int)
 
@@ -186,6 +187,7 @@ SCENE: Grid[Chunk]; _chunks: Grid[Chunk]; heights: Grid[int]
 
 def init(kinds: Grid[int], nodes: Grid[bool], show=False):
     global SCENE, _chunks, heights
+    # 2D primitives stored to file and passed to Blender (obj.py)
     heights = num.vectorize(_makeHeights)(kinds)
     _chunks = num.vectorize(_makeChunk)(kinds, heights)
 
