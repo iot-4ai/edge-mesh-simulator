@@ -9,3 +9,4 @@ scipy
 fastapi
 uvicorn
 toml
+sortedcontainers
