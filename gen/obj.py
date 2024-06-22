@@ -1,10 +1,19 @@
-import bpy as b, bmesh # type: ignore
-from random import random, uniform
-from itertools import cycle
+import bpy as b, bmesh
+# from random import random, uniform
+# from itertools import cycle
 from sys import argv as args
 import numpy as num
 from time import time
 from sys import stdout
+
+"""
+Uses heights and kinds grids to build each chunk by stretching cubes.
+
+!! requires path to scene data (.npz) and output directory as arguments.
+exports to <out>/scene.glb (glTF binary)
+
+See main.py for usage
+"""
 
 b.ops.object.select_all(action="SELECT")
 b.ops.object.delete()
@@ -28,7 +37,8 @@ COL = {
 mats = {c: b.data.materials.new(name=c) for c in COL}
 for c, m in mats.items(): m.diffuse_color = COL[c]
 
-data = args[5] # 1st arg
+i = args.index("--") + 1
+data, out = args[i:i+2]
 grid = num.load(data)
 cols, rows = grid["k"].shape
 
@@ -77,6 +87,5 @@ b.ops.object.editmode_toggle()
 
 b.context.view_layer.update()
 
-out = args[6]
 b.ops.export_scene.gltf(filepath=f"{out}/scene")
 print("1.0") # done

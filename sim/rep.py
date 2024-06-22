@@ -11,6 +11,20 @@ import matplotlib.pyplot as plot
 from matplotlib.colors import ListedColormap
 from functools import partial
 
+"""
+Selects positions for nodes (genPoints) and builds a 3D scene representation (init) 
+
+SCENE is a 2D grid of "Chunks," which are 1x1xz slices of the scene. It's built from a 
+Grid[int] kinds and Grid[bool] nodes that inform the properties and content of each chunk.
+
+The intermediate heights and kinds grids are exported to Blender to build the scene glTF.
+
+Chunks store the UID of any controllers therein. Actual references to a Controller
+instance is stored in dict MESH.
+
+See main.py for usage
+"""
+
 Signal = data("Signal", ["stren", "atten"])
 
 @define
@@ -72,7 +86,7 @@ class Controller:
             "pos": {"x": self.pos.x, "y": self.pos.y, "z": self.pos.z},
             "orient": {"pitch": self.orient.p, "yaw": self.orient.y, "roll": self.orient.r},
             "ip": self.ip,
-            "signal": self.signal.value if self.signal else None # type: ignore
+            "signal": self.signal if self.signal else None
         }
 
 KINDS = {
@@ -122,8 +136,8 @@ def _makeNodes(chunk: Chunk, x, y, node: bool):
                     if not (0 <= pos[0] < W and 0 <= pos[1] < D): continue
                     if chunk.height > _chunks[pos].height: #type: ignore
                         z = randInt(_chunks[pos].height+1, chunk.height) #type: ignore
-                        free = d
-                        break
+                        free = d; break
+            case _: raise ValueError(f"Invalid feature: {chunk.kind}")
     if free: 
         pitch, yaw, roll = 0, 0, rand()*360
         match free:
@@ -134,6 +148,7 @@ def _makeNodes(chunk: Chunk, x, y, node: bool):
             case (0,-1): yaw = uniform(0, 180) # N
             case (-1,0): yaw = uniform(90, 270) # W
             case (0, 1): yaw = uniform(180, 360) # S
+            case _: raise ValueError(f"Invalid location: {free}")
         if type(free) is tuple: pitch = uniform(90, 180)
 
         name = f"C{_makeNodes.nth:0{len(str(_maxN))}d}"

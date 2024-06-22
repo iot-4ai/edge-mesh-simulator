@@ -4,6 +4,16 @@ from random import uniform, getrandbits as choose
 from attrs import define, Factory as new
 from itertools import cycle
 
+"""
+Uses asymmetrical quadtrees (rep. AQT) to partition a warehouse layout into regions.
+
+If regions are <= MIN, division stops. Bisected ("cut") regions <= CUTOFF are discarded.
+Partitions are first cut vertically and then horizontally. The orientation of subsequent
+bisections are chosen randomly.
+
+regions: Partition = genRegions(W, D, show=False)
+"""
+
 COL = cycle("rgbcmk")
 W, D, MIN = 150, 200, 30
 CUTOFF = MIN/4
