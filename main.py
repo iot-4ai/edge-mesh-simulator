@@ -26,9 +26,9 @@ class Timer:
     def __str__(self):
         return f"{time() - self._start:.2f}s"
 
-def main(size=(50, 50), n_nodes=0, comm_type="BLE"):
+def main(width=60, depth=80, n_nodes=None, comm_type="BLE"):
     global W, D
-    if size: W, D = size
+    W, D = width, depth
     sim.TYPE = comm_type
     timer = Timer()
     tmp = NamedTemporaryFile()
@@ -76,7 +76,8 @@ def main(size=(50, 50), n_nodes=0, comm_type="BLE"):
 # Startup script
 @asynccontextmanager  # API
 async def lifespan(app: FastAPI):
-    main((config["width"], config["height"]), config["nodes"], config["comm"])
+    kwargs = {k: config[k] for k in ["width", "depth", "nodes", "comm"] if k in config}
+    main(**kwargs)
     app.MESH = sim.MESH  # type: ignore
     yield
 

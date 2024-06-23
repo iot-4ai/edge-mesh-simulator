@@ -3,6 +3,8 @@
 		"jacqueslucke.blender-development",
 		// Python linter & formatter:
 		"charliermarsh.ruff",
-		"eeyore.yapf"
+		"eeyore.yapf",
+		// TS formatter:
+		"esbenp.prettier-vscode"
 	]
 }

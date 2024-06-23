@@ -1,6 +1,4 @@
-import bpy as b, bmesh
-# from random import random, uniform
-# from itertools import cycle
+import bpy as b
 from sys import argv as args
 import numpy as num
 from time import time
@@ -69,21 +67,6 @@ b.ops.object.editmode_toggle()
 b.ops.mesh.select_all(action="SELECT")
 b.ops.mesh.remove_doubles()
 b.ops.object.editmode_toggle()
-
-# b.ops.mesh.primitive_cube_add(size=X)
-# walls = b.context.active_object # floor & walls
-# walls.location = (X / 2, Y / 2, Z/2)
-# walls.scale = (1+0.01, Y / X +0.01, Z / X)
-# walls.location[2] -= 0.01
-# b.context.active_object.name = "Walls"
-
-
-# # Remove top face of walls
-# bm = bmesh.new(); bm.from_mesh(walls.data)
-# bmesh.ops.delete(bm, \
-#     geom=[f for f in bm.faces if f.normal.z > 0.9], context='FACES')
-# bm.to_mesh(walls.data)
-# bm.free()
 
 b.context.view_layer.update()
 
