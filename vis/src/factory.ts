@@ -27,7 +27,7 @@ export function loadFactory(): Promise<void> {
             },
             undefined,
             (error: any) => {
-                console.error("An error happened while loading the GLTF model", error)
+                console.error("Failed do load GLTF model:", error)
                 reject(error)
             }
         )
@@ -52,6 +52,17 @@ function updateFactoryGroup() {
         if (child instanceof THREE.Mesh) child.castShadow = child.receiveShadow = true
     })
     factoryGroup.position.set(-20, 0, 10)
+}
+
+export function factoryOpacity(opacity: number) {
+    factoryGroup.traverse((child: THREE.Object3D) => {
+        if (child instanceof THREE.Mesh && child.material) {
+            child.material.transparent = opacity < 1
+            child.material.opacity = opacity
+        }
+    })
+    floor.material.transparent = opacity < 1
+    floor.material.opacity = opacity
 }
 
 function makeBoundingBox() {

@@ -18,11 +18,12 @@
     },
     "devDependencies": {
         "@deepkit/type-compiler": "1.0.1-alpha.150",
+        "@typescript-eslint/parser": "^7.13.1",
         "@types/node": "^20.14.8",
         "@types/three": "^0.165.0",
-        "@typescript-eslint/parser": "^7.13.1",
         "eslint": "^9.5.0",
         "prettier": "^3.3.2",
+        "sass": "^1.77.6",
         "three": "^0.165.0",
         "typescript": "^5.5.2",
         "vite": "^5.3.1"

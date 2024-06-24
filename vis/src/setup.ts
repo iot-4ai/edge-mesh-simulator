@@ -1,7 +1,7 @@
 import * as THREE from "three"
 import CameraControls from "camera-controls"
 import { KeyboardKeyHold as KHold } from "hold-event"
-import { factoryBorders, factoryGroup } from "./factory"
+import { factoryBorders, factoryOpacity } from "./factory"
 
 CameraControls.install({ THREE: THREE })
 
@@ -9,7 +9,8 @@ export const scene = new THREE.Scene()
 export const renderer = new THREE.WebGLRenderer()
 export let camera: THREE.OrthographicCamera
 
-export let cameraControls: CameraControls
+export let cameraControls: CameraControls,
+    factoryVis: number = 1
 
 export const camPos: THREE.Vector3 = new THREE.Vector3(75, 100, 300)
 
@@ -102,7 +103,8 @@ export function initKeybinds() {
         cameraControls.zoomTo(fyZoom())
     })
     vKey.addEventListener("holdEnd", () => {
-        factoryGroup.visible = !factoryGroup.visible
+        factoryVis = factoryVis === 1 ? 0.1 : 1
+        factoryOpacity(factoryVis)
     })
     bKey.addEventListener("holdEnd", () => {
         factoryBorders.visible = !factoryBorders.visible

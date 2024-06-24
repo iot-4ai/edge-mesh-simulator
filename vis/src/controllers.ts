@@ -11,8 +11,8 @@ interface Controller {
     signal: number
 }
 
-let controllers: { [key: string]: Controller } = {}
-let controllerMesh: THREE.InstancedMesh
+export let controllers: { [key: string]: Controller } = {}
+export let controllerMesh: THREE.InstancedMesh
 let edgeMesh: THREE.LineSegments
 let edges: Array<[string, string]> = []
 
@@ -71,11 +71,11 @@ function setupEdgeMesh() {
 }
 
 export function updateControllers() {
-    updateControllerPositions()
+    updateControllerPos()
     updateEdges()
 }
 
-function updateControllerPositions() {
+function updateControllerPos() {
     if (!controllerMesh) return
     const tmpMatrix = new THREE.Matrix4()
     let index = 0
