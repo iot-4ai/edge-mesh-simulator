@@ -1,12 +1,13 @@
 import * as THREE from "three"
 import CameraControls from "camera-controls"
 import { KeyboardKeyHold as KHold } from "hold-event"
-import { factoryBorders, factoryOpacity } from "./factory"
+import { factoryBorders, factoryOpacity, factorySize, center } from "./factory"
+import { onController, hidePopup } from "./interact"
 
 CameraControls.install({ THREE: THREE })
 
 export const scene = new THREE.Scene()
-export const renderer = new THREE.WebGLRenderer()
+export const renderer = new THREE.WebGLRenderer({ antialias: true })
 export let camera: THREE.OrthographicCamera
 
 export let cameraControls: CameraControls,
@@ -15,10 +16,11 @@ export let cameraControls: CameraControls,
 export const camPos: THREE.Vector3 = new THREE.Vector3(75, 100, 300)
 
 export const COL = {
-    bg: new THREE.Color(0x343444),
-    dim: new THREE.Color(0x2d3645),
-    node: new THREE.Color(0x1e90ff),
+    bg: new THREE.Color(0x343044),
+    node: new THREE.Color(0xb0c9ff),
+    blue: new THREE.Color(0x1e90ff),
     floor: new THREE.Color(0x6a6a84),
+    light: new THREE.Color(0xccccff),
     white: new THREE.Color(0xffffff),
     black: new THREE.Color(0x000000)
 }
@@ -27,10 +29,8 @@ let width = window.innerWidth,
     height = window.innerHeight
 
 export function initCamera() {
-    camera = new THREE.OrthographicCamera(width / -200, width / 200, height / 200, height / -200, 0.1, 3000)
+    camera = new THREE.OrthographicCamera()
     cameraControls = new CameraControls(camera, renderer.domElement)
-    cameraControls.setPosition(camPos.x, camPos.y, camPos.z)
-    cameraControls.zoomTo(fyZoom())
 
     renderer.setSize(width, height)
     document.body.appendChild(renderer.domElement)
@@ -38,15 +38,58 @@ export function initCamera() {
     window.addEventListener("resize", onWindowResize)
 }
 
+export function orientCamera({ view = "" } = {}) {
+    // console.log(view, onController)
+    const aspect = width / height,
+        padding = 1.4
+    let halfWidth = Math.max(factorySize.x / 2, (factorySize.y * aspect) / 2) * padding,
+        halfHeight = halfWidth / aspect
+
+    camera.left = -(camera.right = halfWidth)
+    camera.bottom = -(camera.top = halfHeight)
+    camera.updateProjectionMatrix()
+
+    let direction: THREE.Vector3
+    if (view == "default") direction = new THREE.Vector3(1, 1, 1)
+    else if (view == "top") direction = new THREE.Vector3(0, 1, 0)
+    else direction = camera.position.clone().sub(center)
+
+    // move frustum near plane back:
+    const distance = Math.max(factorySize.x, factorySize.y, factorySize.z) * 2
+    const position = center.clone().add(direction.normalize().multiplyScalar(distance))
+
+    if (!onController) {
+        cameraControls.setLookAt(position.x, position.y, position.z, center.x, center.y, center.z, true)
+        cameraControls.zoomTo(1.0, true)
+    }
+    if (direction.normalize().dot(new THREE.Vector3(0, 1, 0)) > 0.999) {
+        // top: rotate 90deg + avoid bad rotation induced by floating point err
+        cameraControls.rotateTo(Math.PI / 2, 0, true)
+    }
+}
+
 export function initLights() {
     scene.background = COL.bg
-    scene.add(new THREE.AmbientLight(COL.dim, 8))
-    let directionalLight = new THREE.DirectionalLight(COL.white, 4.5)
-    directionalLight.position.set(-50, 50, -50)
-    directionalLight.castShadow = true
-    directionalLight.shadow.mapSize.set(4000, 4000)
-    scene.add(directionalLight)
+    scene.add(new THREE.AmbientLight(COL.light, 0.8))
+
+    const mainLight = new THREE.DirectionalLight(COL.white, 2.0)
+    mainLight.position.set(-0, 200, 25)
+    mainLight.castShadow = true
+    mainLight.shadow.mapSize.set(512, 512)
+
+    mainLight.shadow.camera.bottom = -(mainLight.shadow.camera.top = factorySize.z)
+    mainLight.shadow.camera.right = -(mainLight.shadow.camera.left = factorySize.x)
+    scene.add(mainLight)
+
+    const fillLight = new THREE.DirectionalLight(new THREE.Color(COL.light), 0.5)
+    fillLight.position.set(-50, 75, -50)
+    scene.add(fillLight)
+
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.BasicShadowMap
+    mainLight.shadow.bias = -0.005
 }
+
 export function initKeybinds() {
     // prettier-ignore
     const KEYCODE = {
@@ -58,7 +101,6 @@ export function initKeybinds() {
         T: 84,
     };
 
-    // NAVIGATION
     const wKey = new KHold(KEYCODE.W, 16.666),
         aKey = new KHold(KEYCODE.A, 16.666),
         sKey = new KHold(KEYCODE.S, 16.666),
@@ -93,14 +135,13 @@ export function initKeybinds() {
         cameraControls.rotate(0, 0.05 * THREE.MathUtils.DEG2RAD * event.deltaTime, true)
     })
 
-    // SETTINGS
     const rKey = new KHold(KEYCODE.R, 16.666),
         vKey = new KHold(KEYCODE.V, 16.666),
         bKey = new KHold(KEYCODE.B, 16.666),
         tKey = new KHold(KEYCODE.T, 16.666)
     rKey.addEventListener("holdStart", () => {
-        cameraControls.setLookAt(camPos.x, camPos.y, camPos.z, 0, 0, 0, true)
-        cameraControls.zoomTo(fyZoom())
+        if (onController) hidePopup()
+        orientCamera({ view: "default" })
     })
     vKey.addEventListener("holdEnd", () => {
         factoryVis = factoryVis === 1 ? 0.1 : 1
@@ -110,9 +151,8 @@ export function initKeybinds() {
         factoryBorders.visible = !factoryBorders.visible
     })
     tKey.addEventListener("holdStart", () => {
-        cameraControls.setLookAt(camPos.x, camPos.y, camPos.z, 0, 0, 0, true)
-        cameraControls.rotateTo(Math.PI / 2, 0, true)
-        cameraControls.zoomTo(fxZoom(), true)
+        if (onController) hidePopup()
+        orientCamera({ view: "top" })
     })
 }
 
@@ -120,17 +160,5 @@ function onWindowResize() {
     width = window.innerWidth
     height = window.innerHeight
     renderer.setSize(width, height)
-    camera.left = width / -200
-    camera.right = width / 200
-    camera.top = height / 200
-    camera.bottom = height / -200
-    camera.updateProjectionMatrix()
-    cameraControls.zoomTo(fxZoom(), true)
-}
-
-function fxZoom() {
-    return width / height / 40
-}
-function fyZoom() {
-    return width / height / 25
+    orientCamera()
 }

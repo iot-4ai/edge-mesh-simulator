@@ -65,6 +65,7 @@ for x in range(rows):
 # Mesh cleanup (deduplicate vertices)
 b.ops.object.editmode_toggle()
 b.ops.mesh.select_all(action="SELECT")
+b.ops.mesh.dissolve_limited()
 b.ops.mesh.remove_doubles()
 b.ops.object.editmode_toggle()
 
