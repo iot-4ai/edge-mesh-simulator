@@ -5,3 +5,6 @@ __pycache__/
 *.out
 *.png
 node_modules/
+vis/.astro/
+vis/dist/
+.env*

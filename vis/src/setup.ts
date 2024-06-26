@@ -28,12 +28,12 @@ export const COL = {
 let width = window.innerWidth,
     height = window.innerHeight
 
-export function initCamera() {
+export function initCamera(container: HTMLElement) {
     camera = new THREE.OrthographicCamera()
     cameraControls = new CameraControls(camera, renderer.domElement)
 
     renderer.setSize(width, height)
-    document.body.appendChild(renderer.domElement)
+    container.appendChild(renderer.domElement)
 
     window.addEventListener("resize", onWindowResize)
 }

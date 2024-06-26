@@ -17,16 +17,14 @@ function animate() {
     renderer.render(scene, camera)
 }
 
-async function init() {
-    initCamera()
+export async function init(container: HTMLElement) {
+    initCamera(container)
     initKeybinds()
     initInteract()
     await loadFactory()
     initLights()
-    orientCamera({view: "top"})
+    orientCamera({ view: "default" })
     await loadControllers()
     renderer.render(scene, camera)
     animate()
 }
-
-init()
