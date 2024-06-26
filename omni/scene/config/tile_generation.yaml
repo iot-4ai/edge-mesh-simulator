@@ -1,0 +1,55 @@
+tile_size: 4.00
+fixed_prims:
+  - prim_path: /Environment/Sky
+    usd: /NVIDIA/Assets/Skies/Dynamic/ClearSky.usd
+    semantic: sky
+  - prim_path: /World/cameras
+    usd: /Isaac/Samples/Scene_Blox/Warehouse_Tiles/cameras.usd
+  - prim_path: /World/end_close
+    usd: /Isaac/Samples/Scene_Blox/Warehouse_Tiles/Props/SM_WarehousEnd_A2_01.usd
+    world_pose:
+      position: [2.00, -58.00, 0]
+      orientation: [0, 0, 0]
+    scale: [1.0, 1.0, 1.0]
+empty:
+  usd: "/Isaac/Samples/Scene_Blox/Warehouse_Tiles/empty.usd"
+  generation:
+    - config: ["piles.yaml", "forklift.yaml", "None"]
+      weights: [0.3, 0.3, 0.4]
+double_shelf_a:
+  usd: "/Isaac/Samples/Scene_Blox/Warehouse_Tiles/double_shelf_a.usd"
+  generation:
+    - config: ["fencing_curved_double_a.yaml", "fencing_straight_double_a.yaml", "fencing_pole_double_a.yaml", "None"]
+      weights: [0.25, 0.25, 0.25, 0.25]
+    - config: ["double_shelf_a_large.yaml", "double_shelf_long.yaml", "racksmall.yaml"]
+      weights: [0.3, 0.3, 0.4]
+double_shelf_b:
+  usd: /Isaac/Samples/Scene_Blox/Warehouse_Tiles/double_shelf_b.usd
+  generation:
+    - config: ["fencing_curved_double_b.yaml", fencing_straight_double_b.yaml, "fencing_pole_double_b.yaml", "None"]
+      weights: [0.25, 0.25, 0.25, 0.25]
+    - config: ["double_shelf_a_large.yaml", "double_shelf_long.yaml", "racksmall.yaml"]
+      weights: [0.3, 0.3, 0.4]
+single_shelf:
+  usd: /Isaac/Samples/Scene_Blox/Warehouse_Tiles/single_shelf.usd
+  generation:
+    - config: ["fencing_curved_single.yaml", "fencing_straight_single.yaml", "fencing_pole_single.yaml", "None"]
+      weights: [0.25, 0.25, 0.25, 0.25]
+    - config: ["double_shelf_a_large.yaml", "double_shelf_long.yaml", "racksmall.yaml"]
+      weights: [0.3, 0.3, 0.4]
+building_center:
+  usd: /Isaac/Samples/Scene_Blox/Warehouse_Tiles/building_center.usd
+  generation:
+    - config: building_center.yaml
+building_end:
+  usd: /Isaac/Samples/Scene_Blox/Warehouse_Tiles/building_end.usd
+empty_cross:
+  usd: /Isaac/Samples/Scene_Blox/Warehouse_Tiles/empty_cross.usd
+  generation:
+    - config: ["hazards.yaml", "None"]
+      weights: [0.5, 0.5]
+empty_straight:
+  usd: /Isaac/Samples/Scene_Blox/Warehouse_Tiles/empty_straight.usd
+  generation:
+    - config: ["piles.yaml", "hazards.yaml", "transporters.yaml", "None"]
+      weights: [0.3, 0.05, 0.05, 0.6]

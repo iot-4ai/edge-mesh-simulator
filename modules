@@ -1,0 +1,11 @@
+attrs
+matplotlib
+ipaddress
+perlin_noise
+click
+numpy
+rich
+scipy
+fastapi
+uvicorn
+toml

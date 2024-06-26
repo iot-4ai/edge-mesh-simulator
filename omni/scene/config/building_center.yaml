@@ -1,0 +1,19 @@
+root_prim: "warehouse"
+generated:
+  - name: "structure"
+    path: structure
+    usd_config:
+      root: /Isaac/Samples/Scene_Blox/Warehouse_Tiles/Props/
+      search_depth: 0
+      filter: SM_WarehouseMiddle.*
+    position:
+      base: [-2, -30, 0.00]
+    orientation:
+      base: [0, 0, 0]
+    semantic: "structure"
+    scale: [1.0, 1.0, 1.0]
+    physics:
+      apply_children: true
+      exclude: SM_Floor_
+      collision: "none"
+      rigid_body: false

@@ -1,0 +1,7 @@
+__pycache__/
+*.usd
+*.obj
+*.glb
+*.out
+*.png
+node_modules/

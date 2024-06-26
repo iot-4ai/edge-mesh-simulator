@@ -1,0 +1,28 @@
+root_prim: clutter
+generated:
+  - name: warehouse_pile
+    path: warehouse_pile
+    position:
+      base: [0, 0, 0]
+      noise:
+        type: uniform
+        params:
+          low: [-1.00, -0.20, 0]
+          high: [1.00, 0.20, 0]
+    orientation:
+      base: [0, 0, 0]
+      noise:
+        type: "uniform"
+        params:
+          low: [0, 0, -180]
+          high: [0, 0, 180]
+    scale: [0.01, 0.01, 0.01]
+    usd_config:
+      root: /NVIDIA/Assets/ArchVis/Industrial/Piles/
+      search_depth: 0
+      filter: "WarehousePile_.*"
+    semantic: "pile"
+    physics:
+      apply_children: true
+      collision: "convexHull"
+      rigid_body: true

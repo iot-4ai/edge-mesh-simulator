@@ -1,46 +1,30 @@
-# edge-mesh-simulator
-simulation of mesh network communications for BLE, 5G, etc.
+## Edge Mesh Simulator 
 
-### basic requirements
+### Setup
+Install dependencies:
 
-# fixed position node instances using a 6-vector x,y,z and facing direction x', y', z'
-# node capabilities -- radio type [BLE, 5G, others]
-# node power source
-# node attentuation relative to default
+- `[p]npm install`
+- `pip install -r modules`
+- Install [Blender](https://www.blender.org/download/)
+	- Ensure the executable is accessible on your PATH as `blender`
 
-# manage a fleet of nodes
-# manage communications between nodes [A, B] and [B, A]
-# log communication data by transmitter, receiver [power output, angle of departure, angle of arrival, RSSI]
-# fleet will have at least 2 gateway nodes which are not transient part of fleet
+Run with: 
+- `./run.sh`
 
-# manage a fleet of moving nodes [which are observed by the fixed position nodes]
-# moving position node instances using a 6-vector x,y,z and facing direction x', y', z' which varies over time
-# node capabilities -- radio type [BLE, 5G, others]
-# node power source
-# node attentuation relative to default
+<table><tr><td>
 
-# chaos
-# each message between nodes can be altered by noise and attentuation
-# extra nodes may be injected and try to particpate in the networking protocols -- should get rejected
+### Navigation
 
-# each fixed node instance needs to recognize packets for:
-# provisioning at "factory"
-# reprovisioning via OTA update
-# using zero trust
+<kbd>1</kbd> - top-down view
 
-# nodes need to be able to save state to "get smarter" over time by 1:1 routing instead of broadcast
-# nodes to to specify "angle of departure" when hardware is available
-# broadcast with TTL in hops or seconds
-# nodes need to provide 6 or more "sensors" and 6 or more "control settings"
-#
+<kbd>R</kbd> - reset camera
 
-# over time, network traffic varies
-# provisioning
-# mesh discovery
-# telemetry from sensors
-# node status
-# control data to "control settings"
-# responses to "moving nodes"
-# reprovisioning (OTA)
+<kbd>G</kbd> - toggle grid
 
+<kbd>H</kbd> - toggle scene
 
+<kbd>W</kbd>,<kbd>A</kbd>,<kbd>S</kbd>,<kbd>D</kbd> / arrow keys - pan
+
+Mouse - orbit/pan/zoom
+
+</td></tr></table>
