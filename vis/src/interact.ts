@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { camera, cameraControls, factoryVis, orientCamera } from "./setup"
+import { camera, cameraControls, factoryVis } from "./setup"
 import { controllerSphereMesh, controllers } from "./controllers"
 import { factoryOpacity } from "./factory"
 
@@ -14,8 +14,7 @@ export function initInteract() {
     window.addEventListener("click", (event: MouseEvent) => {
         const obj = checkIntersect(event)
         if (obj) {
-            const ID = obj.instanceId
-            const name = Object.keys(controllers)[ID!]
+            const name = Object.keys(controllers)[obj.instanceId!]
             if (!onController) cameraControls.saveState()
             showPopup(name, event)
         } else hidePopup({ restore: true })
@@ -60,9 +59,9 @@ function showPopup(name: string, event: MouseEvent) {
     if (!onController) {
         cameraControls.rotate(Math.PI / 6, 0, true)
         cameraControls.zoom(camera.zoom * 2, true)
-        onController = name // on
     }
     cameraControls.setTarget(pos.x, pos.y, pos.z, true)
+    onController = name // on
     // if (factoryVis == 1) factoryOpacity(0.4)
 }
 

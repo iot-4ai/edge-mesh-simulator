@@ -13,9 +13,12 @@
 		"editor.defaultFormatter": "esbenp.prettier-vscode",
 	},
 	"files.exclude": {
-		"**/__pycache__": true,
-		"**/node_modules": true,
-	}, 
+    "**/__pycache__": true,
+    "**/node_modules": true,
+    "vis/*-lock.*": true,
+    "vis/.astro": true,
+	"vis/**/env.d.ts": true
+  }, 
 	"files.associations": {
 		"*.json": "jsonc",
 	},
