@@ -1,12 +1,11 @@
 {
     "name": "ems-vis",
+    "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "astro dev",
-        "start": "astro dev",
-        "build": "astro check && astro build",
-        "preview": "astro preview",
-        "astro": "astro"
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview"
     },
     "prettier": {
         "printWidth": 120,
@@ -18,13 +17,11 @@
         "//": "TODO: array/object wrap"
     },
     "devDependencies": {
-        "@astrojs/check": "^0.7.0",
         "@deepkit/type-compiler": "1.0.1-alpha.150",
         "@types/node": "^20.14.8",
         "@types/three": "^0.165.0",
         "@typescript-eslint/parser": "^7.13.1",
-        "astro": "^4.11.1",
-        "eslint": "^8.56.0",
+        "eslint": "^8.52.0",
         "prettier": "^3.3.2",
         "sass": "^1.77.6",
         "three": "^0.165.0",
@@ -32,12 +29,13 @@
         "vite": "^5.3.1"
     },
     "dependencies": {
-        "@astrojs/react": "^3.6.0",
         "@types/react": "^18.3.3",
         "@types/react-dom": "^18.3.0",
+        "@vitejs/plugin-react": "^4.3.1",
         "axios": "^1.7.2",
         "camera-controls": "^2.8.5",
         "hold-event": "^0.2.0",
+        "pybridge": "^1.4.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1"
     }

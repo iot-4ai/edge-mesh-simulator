@@ -1,13 +1,15 @@
 import * as THREE from "three"
 import { camera, cameraControls, factoryVis } from "./setup"
 import { controllerSphereMesh, controllers } from "./controllers"
+import { initPopup, updatePopup } from "./components/Popup"
 import { factoryOpacity } from "./factory"
+
 
 let ray: THREE.Raycaster, mouse: THREE.Vector2
 export let onController: string | null = null
-const popup = document.getElementById("popup")
 
 export function initInteract() {
+    initPopup()
     ray = new THREE.Raycaster()
     mouse = new THREE.Vector2()
 
@@ -16,7 +18,7 @@ export function initInteract() {
         if (obj) {
             const name = Object.keys(controllers)[obj.instanceId!]
             if (!onController) cameraControls.saveState()
-            showPopup(name, event)
+            showPopup(name, event.x, event.y)
         } else hidePopup({ restore: true })
     })
     window.addEventListener("keydown", (event: KeyboardEvent) => {
@@ -33,21 +35,9 @@ function checkIntersect(event: MouseEvent) {
     return intersects.length > 0 ? intersects[0] : false
 }
 
-function showPopup(name: string, event: MouseEvent) {
-    if (onController === name) return
-
+function showPopup(name: string, x: number, y: number) {
     const controller = controllers[name]
-    if (popup) {
-        // contents
-        popup.innerHTML = `
-        <h3>${controller.name}</h3>
-        <p>IP: ${controller.ip}</p>
-        <p>Signal: ${controller.signal}</p>
-        `
-        popup.style.display = "block"
-        popup.style.left = `${event.clientX + 10}px`
-        popup.style.top = `${event.clientY + 10}px`
-    }
+    updatePopup({ controller, position: { x: x + 10, y: y + 10 } })
 
     const pos = new THREE.Vector3(controller.pos.x - 20, controller.pos.z, -controller.pos.y + 10)
     // pan (truck) rotate, and zoom onto controller
@@ -60,14 +50,14 @@ function showPopup(name: string, event: MouseEvent) {
         cameraControls.rotate(Math.PI / 6, 0, true)
         cameraControls.zoom(camera.zoom * 2, true)
     }
-    cameraControls.setTarget(pos.x, pos.y, pos.z, true)
     onController = name // on
+    cameraControls.setTarget(pos.x, pos.y, pos.z, true)
     // if (factoryVis == 1) factoryOpacity(0.4)
 }
 
 export function hidePopup({ restore = false } = {}) {
+    updatePopup({ controller: null, position: { x: 0, y: 0 } })
     if (onController) {
-        if (popup) popup.style.display = "none"
         onController = null
         if (restore) cameraControls.reset(true)
         // orientCamera() // ensure fit
@@ -84,9 +74,6 @@ export function updateInteract() {
         const x = (screenPosition.x * 0.5 + 0.5) * window.innerWidth
         const y = -(screenPosition.y * 0.5 - 0.5) * window.innerHeight
 
-        if (popup) {
-            popup.style.left = `${x + 10}px`
-            popup.style.top = `${y + 10}px`
-        }
+        updatePopup({ controller, position: { x: x + 10, y: y + 10 } })
     }
 }

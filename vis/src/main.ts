@@ -3,6 +3,7 @@ import { initCamera, initLights, initKeybinds, orientCamera } from "./setup"
 import { scene, renderer, camera, cameraControls } from "./setup"
 import { loadFactory } from "./factory"
 import { loadControllers, updateControllers } from "./controllers"
+import { initSplash, updateProgress, removeSplash } from "./components/Progress"
 import { initInteract, updateInteract } from "./interact"
 
 const clock = new THREE.Clock()
@@ -18,30 +19,29 @@ function animate() {
 
 function buildProgress(): Promise<void> {
     return new Promise((resolve) => {
-        const progressElement = document.getElementById("progress-bar")
-        if (!progressElement) return
+        initSplash()
 
-        function updateProgress() {
+        function getPerc() {
             fetch("http://localhost:8001/progress")
                 .then((response) => response.json())
                 .then((data) => {
-                    const percentage = (data.progress * 100).toFixed(2)
-                    progressElement!.textContent = `Progress: ${percentage}%`
+                    const percentage = data.progress * 100
+                    updateProgress(percentage)
 
-                    if (data.progress < 1.0) requestAnimationFrame(updateProgress)
+                    if (data.progress < 1.0) requestAnimationFrame(getPerc)
                     else {
                         console.log("Progress complete")
-                        progressElement!.style.display = "none" // Hide the progress bar
+                        removeSplash()
                         resolve()
                     }
                 })
         }
-        updateProgress()
+        getPerc()
     })
 }
 
-export async function init(container: HTMLElement) {
-    initCamera(container)
+export async function init() {
+    initCamera()
     initKeybinds()
     initInteract()
     await buildProgress() // block on build step
@@ -52,3 +52,5 @@ export async function init(container: HTMLElement) {
     renderer.render(scene, camera)
     animate()
 }
+
+init()
