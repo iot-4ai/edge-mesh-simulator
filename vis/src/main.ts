@@ -30,7 +30,7 @@ function buildProgress(): Promise<void> {
 
                     if (data.progress < 1.0) requestAnimationFrame(getPerc)
                     else {
-                        console.log("Progress complete")
+                        console.log("Build complete")
                         removeSplash()
                         resolve()
                     }
