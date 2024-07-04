@@ -1,6 +1,4 @@
-# config.toml
-
-width = 60
-height = 80
-nodes = 30
-comm = "BLE"
+# width = 150
+# depth = 200
+# nodes = 30
+# comm = "BLE"

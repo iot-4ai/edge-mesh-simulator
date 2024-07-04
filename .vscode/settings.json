@@ -1,16 +1,24 @@
 {
+	"editor.formatOnSave": true,
+	"editor.formatOnPaste": true,
+	"editor.formatOnSaveMode": "file",
 	"editor.rulers": [90],
-	"editor.insertSpaces": true,
 	"[python]": {
 		"editor.defaultFormatter": "eeyore.yapf",
-		"editor.formatOnSave": true,
 	},
 	"yapf.args": ["--style", ".style.yapf"],
 	"python.analysis.typeCheckingMode": "basic",
 	"python.analysis.autoFormatStrings": true,
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+	},
 	"files.exclude": {
-		"**/__pycache__": true,
-	}, 
+    "**/__pycache__": true,
+    "**/node_modules": true,
+    "vis/*-lock.*": true,
+    "vis/.astro": true,
+	"vis/**/env.d.ts": true
+  }, 
 	"files.associations": {
 		"*.json": "jsonc",
 	},

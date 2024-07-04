@@ -15,13 +15,13 @@ Run with:
 
 ### Navigation
 
-<kbd>1</kbd> - top-down view
+<kbd>T</kbd> - <u>**t**</u>op-down view
 
-<kbd>R</kbd> - reset camera
+<kbd>R</kbd> - <u>**r**</u>eset camera
 
-<kbd>G</kbd> - toggle grid
+<kbd>B</kbd> - toggle <u>**b**</u>order box
 
-<kbd>H</kbd> - toggle scene
+<kbd>V</kbd> - toggle scene <u>**v**</u>isibility
 
 <kbd>W</kbd>,<kbd>A</kbd>,<kbd>S</kbd>,<kbd>D</kbd> / arrow keys - pan
 
