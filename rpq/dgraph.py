@@ -9,6 +9,8 @@ class DGraph:
 
     def gen(self, n=10, p=0.5, seed=None):
         self.graph = nx.erdos_renyi_graph(n, p, seed=seed, directed=False)
+        map = {i: str(i) for i in self.graph.nodes()}  # noqa: A001
+        self.graph = nx.relabel_nodes(self.graph, map)
         for (u, v) in self.graph.edges():
             self.graph.edges[u, v]["w"] = random.randint(1, 10)
 
@@ -18,28 +20,32 @@ class DGraph:
     def m(self) -> int:
         return self.graph.number_of_edges()
 
-    def add_vert(self, v):
+    def addVert(self, v):
         if self.graph.has_node(v): return False
         self.graph.add_node(v)
         return True
 
-    def rem_vert(self, v):
+    def remVert(self, v):
         if not self.graph.has_node(v): return False
         self.graph.remove_node(v)
         return True
 
-    def add_edge(self, u, v, w=1):
-        if self.graph.has_edge(u, v) or not isinstance(w, int): return False
+    def addEdge(self, u, v, w):
+        if self.graph.has_edge(u, v) \
+        or (not isinstance(w, int) and not isinstance(w,float)):
+            return False
         self.graph.add_edge(u, v, w=w)
         return True
 
-    def rem_edge(self, u, v):
+    def remEdge(self, u, v):
         if not self.graph.has_edge(u, v): return False
         self.graph.remove_edge(u, v)
         return True
 
-    def mod_edge(self, u, v, w):
-        if not self.graph.has_edge(u, v) or not isinstance(w, int): return False
+    def modEdge(self, u, v, w):
+        if not self.graph.has_edge(u, v) \
+        or (not isinstance(w, int) and not isinstance(w, float)):
+            return False
         self.graph.edges[u, v]["w"] = w
         return True
 
@@ -53,41 +59,48 @@ class DGraph:
         plt.savefig("output/" + filename)
         plt.close()
 
-    def rand_upd(self, N):
+    def _randChoose(self, op, n, m):
+        match op:
+            case "add":
+                u, v = random.sample(n, 2)
+                return self.addEdge(u, v, w=random.randint(1, 10))
+            case "rem":
+                e = random.sample(m, 1)[0]
+                return self.remEdge(e[0], e[1])
+            case "mod":
+                e = random.sample(m, 1)[0]
+                return self.modEdge(e[0], e[1], w=random.randint(1, 10))
+            case _:
+                return False
+
+    def randUpd(self, N):
         n, m, i = list(self.graph.nodes()), list(self.graph.edges()), 0
         while i < N:
             op = random.choice(["add", "rem", "mod"])
-            match op:
-                case "add":
-                    u, v = random.sample(n, 2)
-                    if not self.add_edge(u, v, w=random.randint(1, 10)): continue
-                case "rem":
-                    e = random.sample(m, 1)[0]
-                    if not self.rem_edge(e[0], e[1]): continue
-                case "mod":
-                    e = random.sample(m, 1)[0]
-                    if not self.mod_edge(e[0], e[1], w=random.randint(1, 10)): continue
-                case _:
-                    continue
+            if not self._randChoose(op, n, m): continue
             i += 1
 
+    def _choose(self, inp):
+        key, val, opt = inp
+        match val:
+            case "add":
+                if type(key) is tuple: ret = self.addEdge(key[0], key[1], opt)
+                else: ret = self.addVert(key)
+            case "remv":
+                if type(key) is tuple: ret = self.remEdge(key[0], key[1])
+                else: ret = self.remVert(key)
+            case "mod":
+                ret = self.modEdge(key[0], key[1], opt) if type(key) is tuple else False
+            case _:
+                ret = False
+        return ret
+
     # updates in form [('id', (op, weight=None)),...]
-    # op = "addv", "adde", "remv", "reme", "mod"
+    # op = "add", "rem", "mod"
     def upd(self, updates):
         ret = []
         for (key, val, *opt) in updates:
-            match val:
-                case "add":
-                    if type(key) is tuple: resp = self.add_edge(key[0], key[1])
-                    resp = self.add_vert(key)
-                case "remv":
-                    if type(key) is tuple: resp = self.rem_edge(key[0], key[1])
-                    resp = self.rem_vert(key)
-                case "mod":
-                    if type(key) is tuple: resp = self.mod_edge(key[0], key[1], opt)
-                    resp = False
-                case _:
-                    resp = False
+            resp = self._choose((key, val, opt))
             ret.append(resp)
         return ret
 
@@ -103,14 +116,14 @@ if __name__ == "__main__":
     dgraph.plot(filename="dgraph.png")
 
     # Add/Remove vertex or edge
-    dgraph.add_vert(10)
-    dgraph.add_edge(10, 2, w=5)
-    dgraph.mod_edge(10, 2, w=7)
-    dgraph.rem_edge(10, 2)
-    dgraph.rem_vert(10)
+    dgraph.addVert(10)
+    dgraph.addEdge(10, 2, w=5)
+    dgraph.modEdge(10, 2, w=7)
+    dgraph.remEdge(10, 2)
+    dgraph.remVert(10)
 
     # Perform random updates
-    dgraph.rand_upd(5)
+    dgraph.randUpd(5)
 
     # manual updates
     upd = [(11, "add"), ((1, 2), "mod", 5), ((2, 3), "rem"), ((3, 4), "mod"),
