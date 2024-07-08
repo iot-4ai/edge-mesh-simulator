@@ -1,6 +1,6 @@
 import functools
 import time
-from typing import Callable, Dict
+from typing import Callable, Dict, Tuple, List
 import networkx as nx
 import matplotlib.pyplot as plt
 import os
@@ -62,7 +62,7 @@ type SP_MAP[T] = Dict[str, T]
 class Pred:
     prev: str
     height: int
-    update: bool
+    val: float
 
 @define
 class CascadeSP:
@@ -70,6 +70,7 @@ class CascadeSP:
     pred: SP_MAP[Pred] = field(default=new(dict))   
     cache: SP_MAP[float] = field(default=new(dict))
     perf: PerfEval = field(default=new(PerfEval))
+    updates: List[tuple] = field(default=new(list))
 
     @staticmethod
     def _perfDec(method: Callable):
@@ -87,67 +88,101 @@ class CascadeSP:
     # alias 
     show = perfShow
 
+    def plot(self, filename="sp.png"):
+        self.graph.plot(filename, pred=self.pred, upd=self.updates)
+
     def gen(self, n=10, p=0.5, seed=None):
         self.graph.gen(n,p,seed)
     
     def print(self):
         print(self.pred)
         print(self.cache)
-        self.graph.plot("g.png")
+        print(self.updates)
 
     @_perfDec
+    def randUpd(self, N):
+        upd = self.graph.randUpd(N)
+        return self.upd(upd)
+
+    # updates in form [('id', (op, weight=None)),...]
+    # op = "add", "rem", "mod"
+    @_perfDec
     def upd(self, updates):
-        return self.graph.upd(updates)
+        ret = self.graph.upd(updates)
+        succ = [upd for upd, res in zip(updates, ret) if res]
+        self.perf.inc(len(ret), len(succ), 0)
+        for upd in succ:
+            u = min(upd[0][0],upd[0][1], key=lambda x: self.pred[x].height)
+            v = upd[0][0] if u == upd[0][1] else upd[0][1]
+            key = self.cache.get(str(u), float("inf"))
+            heapq.heappush(self.updates, (key, ((u,v), upd[1], upd[2])))
+        return ret
 
     @_perfDec
     def dijkstra(self, v):
-        comp = valc = acc = 0
-        v = str(v)
-
+        comp = valc = acc = 0; v = str(v)
         n = self.graph.n()
-        self.pred = {str(v): Pred(prev="", height=0, update=False) for v in range(n)}
+        self.pred = {str(v): Pred(prev="", height=0, val=0) for v in range(n)}
         self.cache = {str(v): float("inf") for v in range(n)}
         self.cache[v] = 0.0
-
-        pq = []
-        heapq.heappush(pq, (0, v))
-        vis = set()
+        pq = []; vis = set()
+        heapq.heappush(pq, (0, v))  
         
         while pq:
             curr_dist, curr = heapq.heappop(pq)
-
             if curr in vis: continue
             vis.add(curr)
 
             for key, val in self.graph.graph[curr].items():
                 if key not in vis:
                     dist = curr_dist + val["w"]
-
                     if dist < self.cache[key]:
                         self.cache[key] = dist
                         self.pred[key].height = self.pred[curr].height + 1
                         self.pred[key].prev = curr
+                        self.pred[key].val = val["w"]
                         heapq.heappush(pq, (dist, key))
                         valc += 1
                     comp += 1
             acc += 1
-        
         self.perf.inc(comp,valc,acc)
     
+    def _cascMatch(self, op, e, w):
+        u, v = e
+        match op:
+            case "add":
+                if self.cache[u] + self.pred[v].val > self.cache[v]: return
+                print("ADD", self.cache[u], self.pred[v], self.cache[v])
+            case "rem":
+                if self.pred[v].prev != u: return
+                print("REM", self.pred[v])
+            case "mod":
+                if self.pred[v].prev != u:
+                    if w > self.graph.getW(u,v): return
+            case _:
+                print("error")
+
+    @_perfDec
     def cascade(self):
-        return
+        for _, upd in self.updates:
+            e, op, w = upd
+            print(upd)
+            self._cascMatch(e, op, w)
+            
 
 # Example usage
 if __name__ == "__main__":
     # Create an instance of CascadeSP
     csp = CascadeSP()
-    
-    # Assuming upd method requires updates
-    updates = []  # Replace with actual updates
-    csp.upd(updates)
 
     csp.gen()
 
     csp.dijkstra(0)
+    csp.plot()
 
-    csp.show() 
+    csp.randUpd(10)
+    csp.show()
+    csp.plot("test.png")
+    csp.print()
+    print("----------------")
+    csp.cascade() # type: ignore
