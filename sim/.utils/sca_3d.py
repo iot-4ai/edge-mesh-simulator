@@ -1,10 +1,9 @@
-import numpy as np
+import numpy as num
 from math import inf, dist
 from time import time
 from typing import *
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plot
 from matplotlib.colors import to_rgba
-from collections import defaultdict as dict
 from numpy import sign
 
 """ 
@@ -15,7 +14,7 @@ def obstructions(start, end, grid):
     ray = dist(start, end)
     # ~normalize direction vector
     diff = [(e - s)/ray for s, e in zip(start, end)]
-    obstacles = dict(float)
+    obstacles = {}
 
     pos = [int(coord) for coord in start]
     step = sign(diff).astype(int) # step direction
@@ -31,7 +30,7 @@ def obstructions(start, end, grid):
         if all(0 <= i < dim for i, dim in zip(pos, grid.shape)):
             exits = min(*inters, ray)
             seg = exits - t
-            if seg > 0.01: obstacles[tuple(pos)] = (seg)
+            if seg > 0.01: obstacles[tuple(pos)] = seg
 
             for i, inter in enumerate(inters):  # i = axis of exit dir
                 if inter == exits:
@@ -43,27 +42,25 @@ def obstructions(start, end, grid):
 
     return obstacles
 
-grid = np.ones((10, 10, 10), dtype=bool)
-
 def showPlot(grid, start, end, obstacles):
-    fig = plt.figure(figsize=(12, 10))
+    fig = plot.figure(figsize=(12, 10))
     ax = fig.add_subplot(111, projection="3d")
     X, Y, Z = grid.shape
 
-    voxels = np.zeros((X, Y, Z), dtype=bool)
-    colors = np.zeros((X, Y, Z, 4))  # RGBA color array
+    voxels = num.zeros((X, Y, Z), dtype=bool)
+    colors = num.zeros((X, Y, Z, 4))  # RGBA color array
 
     max_length = max(*obstacles.values())
     for pos, length in obstacles.items():
         voxels[pos] = True
         opacity = min(1, length/max_length)/2  # clamp
-        colors[pos] = to_rgba(plt.cm.Reds(opacity))
+        colors[pos] = to_rgba(plot.cm.Reds(opacity))
         colors[*pos, 3] = opacity
 
     x0, y0, z0 = start; x1, y1, z1 = end
 
-    ax.text(x0, y0, z0 + 0.25, f"({x0}, {y0})", ha="center", color="green", fontsize=10)
-    ax.text(x1, y1, z1 + 0.25, f"({x1}, {y1})", ha="center", color="green", fontsize=10)
+    ax.text(x0, y0, z0 + 0.25, f"({x0}, {y0}, {z0})", ha="center", color="green", fontsize=10)
+    ax.text(x1, y1, z1 + 0.25, f"({x1}, {y1}, {z1})", ha="center", color="green", fontsize=10)
 
     ax.voxels(voxels, facecolors=colors, edgecolor="none")
     ax.scatter(*start, color="g", s=25); ax.scatter(*end, color="g", s=25)
@@ -77,8 +74,10 @@ def showPlot(grid, start, end, obstacles):
     ax.set_xlim(0, X); ax.set_ylim(0, Y); ax.set_zlim(0, Z)
     ax.set_box_aspect((X, Y, Z))
     ax.grid(False)
-    plt.tight_layout()
-    plt.show()
+    plot.tight_layout()
+    plot.show()
+
+grid = num.random.choice([True, False], size=(10, 10, 10), p=[0.2, 0.8])
 
 def run(test, start, end):
     try:

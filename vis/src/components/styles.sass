@@ -1,19 +1,53 @@
+$fill: #33D17A
+$bar: #DDD
+$dim: #666
+
 #popup
-	position: fixed
+	position: absolute
 	background: white
+	border-radius: 15px
 	padding: 15px
-	border-radius: 8px
-	box-shadow: 0 2px 20px rgba(0, 0, 0, 0.25)
+	box-shadow: 0 2px 25px rgba(0, 0, 0, 0.20)
 	white-space: nowrap
-	pointer-events: none
+	min-height: 10px
 
 	&-title
-		margin: 0 0 10px
+		margin: 8px
 
 	&-info
 		margin: 5px 0
 		font-size: smaller
-		color: #666
+		color: $dim
+
+#popup-title, #popup-info
+	margin-bottom: 10px
+
+#stren
+	max-height: 250px 
+	overflow-y: scroll
+	padding-left: 20px
+	padding-right: 10px
+
+#stren-item
+	display: flex
+	align-items: center
+	margin-bottom: 5px
+
+#stren-perc
+	min-width: 100px
+
+#stren-bar
+	width: 100px
+	height: 10px
+	background: $bar
+	margin-left: 10px
+	border-radius: 5px
+	overflow: hidden
+
+#stren-bar-fill
+	height: 100%
+	background: $fill
+	border-radius: 5px
 
 #progress
 	position: fixed
@@ -31,12 +65,12 @@
 
 	&-div
 		width: 100%
-		background-color: #DDD
+		background-color: $bar
 		height: 20px
 		border-radius: 10px
 		overflow: hidden
 
 	&-fill
 		height: 100%
-		background-color: #33D17A
+		background-color: $fill
 		transition: width 0.3s ease-in-out

@@ -1,5 +1,5 @@
 from collections import namedtuple as data
-from attrs import define, field, Factory as default
+from attrs import define, field, Factory as default, asdict, astuple
 from ipaddress import IPv6Address
 from random import randint as randInt, random as rand, \
 getrandbits as choose, choice, shuffle, uniform
@@ -25,11 +25,12 @@ instance is stored in dict MESH.
 See main.py for usage
 """
 
-Signal = data("Signal", ["stren", "atten"])
-
 @define
 class Coord:
     x: int; y: int; z: int
+
+    def __iter__(self):
+        return iter(astuple(self))
 
 @define
 class Rot:
@@ -73,7 +74,7 @@ class Controller:
     pos: Coord
     orient: Rot
     ip: str = field()
-    signal: Signal|None = None
+    hears: Dict[str, float] = default(dict)
 
     @ip.default # type: ignore
     def genIPv6(self) -> str:
@@ -83,10 +84,10 @@ class Controller:
         return {
             "name": self.name,
             "comm": self.comm.toJson(),
-            "pos": {"x": self.pos.x, "y": self.pos.y, "z": self.pos.z},
-            "orient": {"pitch": self.orient.p, "yaw": self.orient.y, "roll": self.orient.r},
+            "pos": asdict(self.pos),
+            "orient": asdict(self.orient),
             "ip": self.ip,
-            "signal": self.signal if self.signal else None
+            "hears": self.hears
         }
 
 KINDS = {
@@ -104,6 +105,10 @@ class Chunk:
     height: int
     nodes: List[str] = default(list)
 
+type Grid[T] = NDArray[(int, int), T] # type: ignore
+type Volume[T] = NDArray[(int, int, int), T] # type: ignore
+
+
 def _makeHeights(kind: int) -> int:
     return {
         "empty": 0,
@@ -111,6 +116,19 @@ def _makeHeights(kind: int) -> int:
         "pile": randInt(1, H // 4),
         "wall": H
     }[KINDS[kind]]
+
+
+def _makeCloud(kinds: Grid, heights: Grid ) -> Volume:
+    cloud = num.zeros((*kinds.shape, H), dtype=int)
+
+    for pos in num.ndindex(kinds.shape):
+        kind = kinds[pos]
+        height = heights[pos]
+        
+        # fill w/ kind up to height:
+        cloud[*pos, :height] = kind
+
+    return cloud
 
 def _makeChunk(kind: int, height: int) -> Chunk:
     return Chunk(KINDS[kind], height)
@@ -162,8 +180,6 @@ def _makeNodes(chunk: Chunk, x, y, node: bool):
 _makeNodes.nth = 0
 _maxN = 0
 
-type Grid[T] = NDArray[(int, int), T] # type: ignore
-
 def genPoints(x, y, r=5, n=None) -> Grid:
     sample = qmc.PoissonDisk(d=2, radius=r / min(x, y)).fill_space()
     sample[:, 0], sample[:, 1] = sample[:, 0] * x, sample[:, 1] * y # scale: fit
@@ -198,13 +214,14 @@ def _showFig(kinds):
 H = 20
 TYPE: str = ""
 MESH: Dict[str, Controller] = {}
-SCENE: Grid[Chunk]; _chunks: Grid[Chunk]; heights: Grid[int]
+SCENE: Grid[Chunk]; _chunks: Grid[Chunk]; heights: Grid[int]; cloud: Volume[int]
 
 def init(kinds: Grid[int], nodes: Grid[bool], show=False):
-    global SCENE, _chunks, heights
+    global SCENE, _chunks, heights, cloud
     # 2D primitives stored to file and passed to Blender (obj.py)
     heights = num.vectorize(_makeHeights)(kinds)
     _chunks = num.vectorize(_makeChunk)(kinds, heights)
+    cloud = _makeCloud(kinds, heights)
 
     Xs, Ys = num.indices(_chunks.shape) # extract indices
     SCENE = num.vectorize(_makeNodes)(_chunks, Xs, Ys, nodes)
