@@ -5,6 +5,7 @@ import { loadFactory } from "./factory"
 import { loadControllers, updateControllers } from "./controllers"
 import { initSplash, updateProgress, removeSplash } from "./components/Progress"
 import { initInteract, updateInteract } from "./interact"
+import { initEdges, updateEdges } from "./edges"
 
 const clock = new THREE.Clock()
 
@@ -12,6 +13,7 @@ function animate() {
     requestAnimationFrame(animate)
     const delta = clock.getDelta()
     updateControllers()
+    updateEdges()
     updateInteract() // move popup with node
     cameraControls.update(delta)
     renderer.render(scene, camera)
@@ -49,6 +51,7 @@ export async function init() {
     initLights()
     orientCamera({ view: "default" })
     await loadControllers()
+    initEdges()
     renderer.render(scene, camera)
     animate()
 }
