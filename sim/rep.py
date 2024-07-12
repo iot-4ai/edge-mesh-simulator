@@ -5,7 +5,7 @@ from random import randint as randInt, random as rand, \
 getrandbits as choose, choice, shuffle, uniform
 import numpy as num
 from typing import *
-from nptyping import NDArray
+from numpy.typing import NDArray
 from scipy.stats import qmc
 import matplotlib.pyplot as plot
 from matplotlib.colors import ListedColormap

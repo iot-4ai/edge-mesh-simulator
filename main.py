@@ -2,22 +2,19 @@ from gen.proc import *
 from gen.place import *
 from sim.signal import *
 from sim import rep
+from gen.build import build
 from typing import *  # type: ignore
 from attrs import define, Factory as new
 import matplotlib.pyplot as plot
-from subprocess import Popen, PIPE, DEVNULL
-from numpy import savez_compressed as export
-from tempfile import NamedTemporaryFile
 from os import getcwd as cwd, path, mkdir
-from contextlib import suppress, asynccontextmanager
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from time import time
 from rich import print
-from rich.progress import Progress
 from sys import stderr
-import threading
-import uvicorn
+from threading import Thread
+from uvicorn import run
 import toml
 
 config = toml.load("config.toml")
@@ -29,77 +26,55 @@ class Timer:
     def __str__(self):
         return f"{time() - self._start:.2f}s"
 
-proc, progress = None, 0.0
+progress = {"value": 0.0, "step": "Initializing"}
+timer = Timer()
 
-def blender(tmp, out):
-    global proc, progress
-    proc = Popen(["blender", "-b", "-P", "gen/obj.py", "--", tmp.name, out],
-        stdout=PIPE,
-        stderr=DEVNULL)
-
-    with Progress() as bar:
-        task = bar.add_task("[yellow]Building...", total=100)
-
-        for line in proc.stdout:  # type: ignore
-            status = line.decode().strip()
-            with suppress(ValueError):
-                progress = float(status)
-                bar.update(task, completed=progress*100)
-
-    ret = proc.wait()
-    if ret >= 0: print(f"[bright_yellow][{Timer()}][/]  Scene object file saved to {out}")
-    else: raise InterruptedError("Interrupted")
+def updateProgress(value, step=None):
+    global progress
+    progress["value"] = value
+    if step:
+        progress["step"] = step
+        print(f"[bright_yellow][{timer}][/]  {step}")
 
 def main(width=60, depth=80, n_nodes=None, comm_type="BLE"):
     global W, D
     W, D = width, depth
     rep.TYPE = comm_type
-    timer = Timer()
-    tmp = NamedTemporaryFile(delete=False)
     plot.rcParams["toolbar"] = "None"
+
+    updateProgress(0.0, "Generating layout")
     regions = genRegions(W, D, show=False)  # generate warehouse layout
-    y, r = "bright_yellow", "bright_red"
-    print(f"[{y}][{timer}][/]  Layout generated")
 
     try:
+        updateProgress(0.05, "Placing features")
         kinds: Grid = features(W, D, regions, FREQ)  # place features
-        print(f"[{y}][{timer}][/]  Features placed")
+
+        updateProgress(0.1, "Scattering nodes")
         nodes: Grid = rep.genPoints(W, D, n=n_nodes)  # scatter nodes
 
         plot.close()
+        updateProgress(0.15, "Creating internal representation")
         rep.init(kinds, nodes, show=False)  # create scene rep in global rep.SCENE
-        print(f"[{y}][{timer}][/]  Created internal scene representation")
         plot.pause(0.1)
 
+        updateProgress(0.2, "Determining signal strength")
         sigStren(rep.cloud, rep.MESH)
-        print(f"[{y}][{timer}][/]  Controllers found neighbors")
-
-        export(tmp, k=kinds, h=rep.heights)
-        print(f"[{y}][{timer}][/]  Saved scene data to {tmp.name}")
 
         out = path.join(cwd(), "vis", "assets")
         if not path.exists(out): mkdir(out)
-
-        # Start Blender process in a separate thread
-        thread = threading.Thread(target=blender, args=(tmp, out))
-        thread.start()
+        build(rep.cloud, out, lambda v, s=None: updateProgress(0.4 + v*0.6, s))
 
     except Exception as e:
-        print(f"[{r}][{timer}]  ERROR: {e}[/]", file=stderr)
+        print(f"[bright_red][{timer}]  ERROR: {e}[/]", file=stderr)
     finally:
         plot.close()
 
-    return thread
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global proc
     kwargs = {k: config[k] for k in ["width", "depth", "nodes", "comm"] if k in config}
-    thread = main(**kwargs)
+    Thread(target=main, kwargs=kwargs).start()
     app.MESH = rep.MESH  # type: ignore
     yield
-    thread.join()
-    if proc: proc.terminate()
 
 app = FastAPI(lifespan=lifespan)
 origins = [
@@ -116,12 +91,11 @@ app.add_middleware(
 )
 
 @app.get("/progress")
-async def get_progress():
-    global progress
-    return {"progress": progress}
+async def getProgress():
+    global progress; return progress
 
 @app.get("/")
-def get_root():
+def getRoot():
     return {"message": "Alive"}
 
 @app.get("/controllers")
@@ -129,6 +103,4 @@ async def controllers():
     return [x.toJson() for x in app.MESH.values()]  # type: ignore
 
 if __name__ == "__main__":
-    uvicorn.run(
-        "__main__:app", host="localhost", port=8001, reload=False, log_level="critical"
-    )
+    run("__main__:app", host="localhost", port=8001, reload=False, log_level="critical")

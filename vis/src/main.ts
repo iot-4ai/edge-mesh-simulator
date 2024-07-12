@@ -27,12 +27,12 @@ function buildProgress(): Promise<void> {
             fetch("http://localhost:8001/progress")
                 .then((response) => response.json())
                 .then((data) => {
-                    const percentage = data.progress * 100
-                    updateProgress(percentage)
+                    const percentage = data.value * 100
+                    updateProgress(percentage, data.step)
 
-                    if (data.progress < 1.0) requestAnimationFrame(getPerc)
+                    if (data.value < 1.0) requestAnimationFrame(getPerc)
                     else {
-                        console.log("Build complete")
+                        console.log("Progress complete")
                         removeSplash()
                         resolve()
                     }
