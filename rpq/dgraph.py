@@ -74,24 +74,16 @@ class DGraph:
 
     def _drawSP(self, source, pos, pred):
         if source:
-            path_edges = []
-            for target in pred:
-                if target == source: continue
-                node = target
-                while pred[node].prev != "":
-                    path_edges.append((pred[node].prev, node))
-                    node = pred[node].prev
-            path_edges = [
-                edge for edge in path_edges if self.graph.has_edge(edge[0], edge[1])
-            ]
+            path_edges = [(pred[node].prev, node) for node in pred]
+            path_edges = [e for e in path_edges if self.graph.has_edge(e[0], e[1])]
             nx.draw_networkx_edges(
                 self.graph, pos, edgelist=path_edges, edge_color="r", width=2
             )
 
     def _colorUpd(self, upd):
         upd_nodes = set()
-        for _, val in upd:
-            upd_nodes.add(val[0][1])
+        for _, *val in upd:
+            upd_nodes.add(val[0])
         return ["red" if node in upd_nodes else "lightblue" for node in self.graph.nodes]
 
     def plot(self, filename="graph.png", pred=None, upd=None):
@@ -122,11 +114,12 @@ class DGraph:
                 u, v = e
         return ((u, v), op, w)
 
-    def randUpd(self, N):
+    def randUpd(self, N, opt=None):
         upd = []
         n, m, i = list(self.graph.nodes()), list(self.graph.edges()), 0
         while i < N:
             op = random.choice(["add", "rem", "mod"])
+            if opt: op = opt
             upd.append(self._randChoose(op, n, m))
             i += 1
         return upd
