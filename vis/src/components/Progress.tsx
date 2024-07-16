@@ -2,35 +2,52 @@ import { FC as Component } from "react"
 import ReactDOM from "react-dom/client"
 import "./styles.sass"
 
-interface Splash {
-    progress: number
+interface Progress {
+    value: number
     step: string
 }
 
-const Splash: Component<Splash> = ({ progress, step }) => {
+interface Splash {
+    build: Progress
+    signal: Progress
+}
+
+const Bar: Component<{ progress: Progress}> = ({ progress: {value, step} }) => (
+    <div className="progress-container">
+        <div className={`progress-label ${value == 0 ? "idle" : ""}`}>
+            {step}{value === 1 ? "" : "..."}
+        </div>
+        <div className="progress-bar">
+            <div
+                className={`progress-fill ${value == 1 ? "complete" : ""}`}
+                style={{ width: `${value * 100}%` }}
+            ></div>
+        </div>
+    </div>
+)
+
+const Splash: Component<Splash> = ({ build, signal }) => {
     return (
-        <div id="progress">
-            <div id="progress-label">{step}{progress != 1.0 ? "..." : "."}</div>
-            <div id="progress-div">
-                <div id="progress-fill" style={{ width: `${progress}%` }}></div>
-            </div>
+        <div className="progress">
+            <Bar progress={build} />
+            <Bar progress={signal} />
         </div>
     )
 }
 
-let splashRoot: ReactDOM.Root
+let splash: ReactDOM.Root
 
 export function initSplash() {
     const parent = document.body.appendChild(document.createElement("div"))
-    splashRoot = ReactDOM.createRoot(parent)
+    splash = ReactDOM.createRoot(parent)
 }
 
-export function updateProgress(progress: number, step: string) {
-    splashRoot.render(<Splash progress={progress} step={step} />)
+export function updateProgress(build: Progress, signal: Progress) {
+    splash.render(<Splash build={build} signal={signal} />)
 }
 
 export function removeSplash() {
-    splashRoot.unmount()
+    if (splash) splash.unmount()
 }
 
 export default Splash

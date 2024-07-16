@@ -10,6 +10,7 @@ from os import getcwd as cwd, path, mkdir
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from concurrent.futures import ThreadPoolExecutor
 from time import time
 from rich import print
 from sys import stderr
@@ -26,15 +27,18 @@ class Timer:
     def __str__(self):
         return f"{time() - self._start:.2f}s"
 
-progress = {"value": 0.0, "step": "Initializing"}
+progress = {
+    "signal": {"value": 0.0, "step": "Waiting for nodes"},
+    "build":  {"value": 0.0, "step": "Initializing"}
+}
 timer = Timer()
 
-def updateProgress(value, step=None):
+def updateProgress(task, value, step=None, log=True):
     global progress
-    progress["value"] = value
+    progress[task]["value"] = value
     if step:
-        progress["step"] = step
-        print(f"[bright_yellow][{timer}][/]  {step}")
+        progress[task]["step"] = step
+        if log: print(f"[bright_yellow][{timer}][/]  {step}")
 
 def main(width=60, depth=80, n_nodes=None, comm_type="BLE"):
     global W, D
@@ -42,27 +46,33 @@ def main(width=60, depth=80, n_nodes=None, comm_type="BLE"):
     rep.TYPE = comm_type
     plot.rcParams["toolbar"] = "None"
 
-    updateProgress(0.0, "Generating layout")
+    updateProgress("build", 0.0, "Generating layout")
     regions = genRegions(W, D, show=False)  # generate warehouse layout
 
     try:
-        updateProgress(0.05, "Placing features")
+        updateProgress("build", 0.05, "Placing features")
         kinds: Grid = features(W, D, regions, FREQ)  # place features
 
-        updateProgress(0.1, "Scattering nodes")
+        updateProgress("build", 0.1, "Scattering nodes")
         nodes: Grid = rep.genPoints(W, D, n=n_nodes)  # scatter nodes
-
         plot.close()
-        updateProgress(0.15, "Creating internal representation")
+
+        updateProgress("build", 0.15, "Creating internal representation")
         rep.init(kinds, nodes, show=False)  # create scene rep in global rep.SCENE
         plot.pause(0.1)
 
-        updateProgress(0.2, "Determining signal strength")
-        sigStren(rep.cloud, rep.MESH)
+        def runBuild():
+            out = path.join(cwd(), "vis", "assets")
+            if not path.exists(out): mkdir(out)
+            build(rep.cloud, out, lambda v, s=None: updateProgress("build", 0.2 + v*0.8, s))
 
-        out = path.join(cwd(), "vis", "assets")
-        if not path.exists(out): mkdir(out)
-        build(rep.cloud, out, lambda v, s=None: updateProgress(0.4 + v*0.6, s))
+        def runSigStren():
+            callback = lambda v, s=None, log=True: updateProgress("signal", v, s, log)
+            sigStren(rep.cloud, rep.MESH, callback)
+
+        with ThreadPoolExecutor() as executor:
+            executor.submit(runBuild)
+            executor.submit(runSigStren)
 
     except Exception as e:
         print(f"[bright_red][{timer}]  ERROR: {e}[/]", file=stderr)
