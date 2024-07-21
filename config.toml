@@ -1,4 +1,4 @@
-# width = 150
-# depth = 200
+width = 250
+depth = 400
 # nodes = 30
 # comm = "BLE"

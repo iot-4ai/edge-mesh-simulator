@@ -54,6 +54,7 @@ function updateFactoryGroup() {
         }
     })
     factoryGroup.position.set(-20, 0, 10)
+    factoryGroup.rotation.x = -Math.PI / 2
 }
 
 export function factoryOpacity(opacity: number) {

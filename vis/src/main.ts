@@ -7,7 +7,8 @@ import { initSplash, updateProgress, removeSplash } from "./components/Progress"
 import { initInteract, updateInteract } from "./interact"
 import { initEdges, updateEdges } from "./edges"
 
-const clock = new THREE.Clock()
+const clock = new THREE.Clock(),
+    URL = "http://localhost:8001"
 
 function animate() {
     requestAnimationFrame(animate)
@@ -19,26 +20,23 @@ function animate() {
     renderer.render(scene, camera)
 }
 
-function buildProgress(): Promise<void> {
+async function buildProgress(): Promise<void> {
+    const getData = () => { return fetch(`${URL}/progress`).then((res) => res.json()) }
+    let check = await getData()
+    if (check.build.value == 1.0) return
     return new Promise((resolve) => {
         initSplash()
+        function getProgress() {
+            getData().then((data) => {
+                    updateProgress(data.build, data.signal)
 
-        function getPerc() {
-            fetch("http://localhost:8001/progress")
-                .then((response) => response.json())
-                .then((data) => {
-                    const percentage = data.progress * 100
-                    updateProgress(percentage)
-
-                    if (data.progress < 1.0) requestAnimationFrame(getPerc)
-                    else {
-                        console.log("Build complete")
-                        removeSplash()
-                        resolve()
+                    if (data.build.value < 1.0 || data.signal.value < 1.0) {
+                        requestAnimationFrame(getProgress)
                     }
+                    else resolve()
                 })
         }
-        getPerc()
+        getProgress()
     })
 }
 
@@ -48,6 +46,7 @@ export async function init() {
     initInteract()
     await buildProgress() // block on build step
     await loadFactory()
+    setTimeout(() => removeSplash(), 500)
     initLights()
     orientCamera({ view: "default" })
     await loadControllers()

@@ -1,6 +1,7 @@
-$fill: #33D17A
-$bar: #DDD
+$full: #33D17A
+$bar: #BBB
 $dim: #666
+$ease: ease-in-out
 
 #popup
 	position: absolute
@@ -28,49 +29,62 @@ $dim: #666
 	padding-left: 20px
 	padding-right: 10px
 
-#stren-item
-	display: flex
-	align-items: center
-	margin-bottom: 5px
+	&-item
+		display: flex
+		align-items: center
+		margin-bottom: 5px
 
-#stren-perc
-	min-width: 100px
+	&-perc
+		min-width: 100px
 
-#stren-bar
-	width: 100px
-	height: 10px
-	background: $bar
-	margin-left: 10px
-	border-radius: 5px
-	overflow: hidden
+	&-bar
+		width: 100px
+		height: 10px
+		background: $bar
+		margin-left: 10px
+		border-radius: 5px
+		overflow: hidden
 
-#stren-bar-fill
-	height: 100%
-	background: $fill
-	border-radius: 5px
+	&-bar-fill
+		height: 100%
+		background: $full
+		border-radius: 5px
 
-#progress
+.progress
+	background: white
 	position: fixed
-	padding: 10px
-	border-radius: 5px
-	transform: translate(-50%, -50%)
-	top: 50%
-	left: 50%
-	width: 400px
+	inset: 0
+	display: flex
+	justify-content: center // vertical
+	align-items: center // horizonal
+	flex-direction: column
+
+	&-container
+		margin-bottom: 40px
+		width: 15vw
+		&:last-child
+			margin-bottom: 0
 
 	&-label
-		margin-bottom: 5px
+		margin-bottom: 10px
 		text-align: center
-		font-size: 14px
+		&.idle
+			color: $dim
 
-	&-div
-		width: 100%
-		background-color: $bar
-		height: 20px
+
+	&-bar
+		height: 12px
 		border-radius: 10px
 		overflow: hidden
 
+
 	&-fill
 		height: 100%
-		background-color: $fill
-		transition: width 0.3s ease-in-out
+		background: $bar
+		border-radius: 10px
+
+		transition: width $ease, background $ease
+		transition-duration: 0.2s
+
+		&.complete
+			background: $full

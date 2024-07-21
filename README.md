@@ -3,17 +3,17 @@
 ### Setup
 Install dependencies:
 
-- `[p]npm install`
-- `pip install -r modules`
-- Install [Blender](https://www.blender.org/download/)
-	- Ensure the executable is accessible on your PATH as `blender`
+```sh
+pip install -r modules
+cd vis/
+[p]npm install
+```
 
-Run with: 
-- `./run.sh`
-
-<table><tr><td>
+Executing `run.sh` starts the server at `localhost:8000`.
 
 ### Navigation
+
+<table><tr><td>
 
 <kbd>T</kbd> - <u>**t**</u>op-down view
 
