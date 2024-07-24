@@ -1,6 +1,5 @@
 import random
 import networkx as nx
-import pygraphviz as py
 import matplotlib.pyplot as plt
 from attrs import define, field, Factory as new
 from typing import Dict, Any, Tuple
@@ -119,14 +118,15 @@ class DGraph:
         n, m, i = list(self.graph.nodes()), list(self.graph.edges()), 0
         while i < N:
             op = random.choice(["add", "rem", "mod"])
-            if opt: op = opt
+            if opt: op = random.choice(opt)
             upd.append(self._randChoose(op, n, m))
             i += 1
         return upd
 
-    def _choose(self, inp):
+    def _choose(self, inp, vis):
         key, val, opt = inp
         if len(opt) > 0: opt = opt[0]
+        if key in vis: return False
         match val:
             case "add":
                 if type(key) is tuple: ret = self.addEdge(key[0], key[1], opt)
@@ -138,14 +138,16 @@ class DGraph:
                 ret = self.modEdge(key[0], key[1], opt) if type(key) is tuple else False
             case _:
                 ret = False
+        vis.add(key)
         return ret
 
     # updates in form [('id', (op, weight=None)),...]
     # op = "add", "rem", "mod"
     def upd(self, updates):
+        vis = set()
         ret = []
         for (key, val, *opt) in updates:
-            resp = self._choose((key, val, opt))
+            resp = self._choose((key, val, opt), vis)
             ret.append(resp)
         return ret
 

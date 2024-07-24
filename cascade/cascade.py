@@ -1,13 +1,9 @@
 import functools
 import time
-from typing import Callable, Dict, Tuple, List
-import networkx as nx
-import matplotlib.pyplot as plt
+from typing import Callable, Dict, List
 import os
-import re
 import heapq
 from dataclasses import dataclass
-from sortedcontainers import SortedDict
 from dgraph import DGraph
 from attrs import define, field, Factory as new
 import pickle
@@ -52,7 +48,10 @@ class PerfEval:
         print(f"{key}:")
         for k, v in val.items():
             avg = sum(v) / len(v)
-            print(f" {k + ':':<{key_len+1}} {avg:.4e}")
+            if k == "avg_time": 
+                avg = str(round(avg*1000000,2)) + "ns"
+                print(f" {k + ':':<{key_len+1}} {avg}")
+            elif avg > 0: print(f" {k + ':':<{key_len+1}} {avg:.4e}")
 
     def print(self):
         print("------PERFORMANCE------")
@@ -76,6 +75,7 @@ class CascadeSP:
     cache: SP_MAP[float] = field(default=new(dict))
     perf: PerfEval = field(default=new(PerfEval))
     updates: List[tuple] = field(default=new(list))
+    repairs: List[tuple] = field(default=new(list))
 
     @staticmethod
     def _perfDec(method: Callable):
@@ -105,7 +105,7 @@ class CascadeSP:
         print(self.cache)
 
     def clear(self):
-        self.updates = []; self.pred = {}; self.cache = {}
+        self.updates = []; self.pred = {}; self.cache = {};
 
     def load(self, filename):
         self.graph = pickle.load(open(filename, "rb"))  # noqa: SIM115
@@ -119,16 +119,18 @@ class CascadeSP:
 
     # updates in form [('id', (op, weight=None)),...]
     # op = "add", "rem", "mod"
-    @_perfDec
     def upd(self, updates):
         ret = self.graph.upd(updates)
-        succ = [upd for upd, res in zip(updates, ret) if res]
-        self.perf.inc("upd", len(ret), len(succ), 0)
-        for upd in succ:
+        upds = [upd for upd, ret in zip(updates, ret) if ret]
+        self._cascProp(upds)
+        return ret
+    
+    @_perfDec
+    def _cascProp(self, upds):
+        for upd in upds:
             u = min(upd[0][0],upd[0][1], key=lambda x: self.cache[x])
             v = upd[0][0] if u == upd[0][1] else upd[0][1]
             self._cascMatch((u,v), upd[1], upd[2])
-        return ret
 
     def _predSet(self, u, v, w):
         self.cache[v] = self.cache[u] + w 
@@ -165,6 +167,7 @@ class CascadeSP:
             acc += 1
         return comp, valc, acc
     
+    @_perfDec
     def _cascLoop(self):
         vis = set()
         comp = valc = acc = 0
@@ -173,6 +176,8 @@ class CascadeSP:
             if len(opt) > 0 and opt[0] not in vis: vis.add(opt[0])
             if curr in vis: continue
             vis.add(curr)
+            if curr_dist != self.cache[curr]:
+                curr_dist = self.cache[curr]
             for key, val in self.graph.graph[curr].items():
                 if key not in vis:
                     dist = curr_dist + val["w"]
@@ -183,41 +188,69 @@ class CascadeSP:
                     comp += 1
             acc += 1
         return comp, valc, acc
+    
+    @_perfDec
+    def _cascRepair(self):
+        vis = set()
+        while self.repairs:
+            _, curr = heapq.heappop(self.repairs)
+            if curr not in vis:
+                self.cache[curr] = float("inf")
+                prev = self.cache[curr]
+                for key, val in self.graph.graph[curr].items():
+                    dist = self.cache[key] + val["w"]
+                    if self.pred[key].prev != curr and dist < self.cache[curr]:
+                        self._predSet(key, curr, val["w"])
+            vis.add(curr)
+                    
+            if (prev != self.cache[curr]):
+                for key, val in self.graph.graph[curr].items():
+                    dist = self.cache[curr] + val["w"]
+                    if self.pred[curr].prev != key and dist < self.cache[key]:
+                            self._predSet(curr, key, val["w"])
+                    if self.pred[key].prev == curr:
+                        if key in vis: vis.remove(key)
+                        self._predSet(curr, key, val["w"])
+                        heapq.heappush(self.repairs, (dist, key))
 
-
-
-    def _cascRepair(self, v):
+    def _unlink(self, v):
+        self.pred[v] = Pred(prev="", height=0, val=0)
         self.cache[v] = float("inf")
-        for key, val in self.graph.graph[v].items():
-            dist = self.cache[key] + val["w"]
-            if dist < self.cache[v]:
-                self._predSet(key, v, val["w"])
-                # print(dist, self.cache[v])
+        heapq.heappush(self.repairs, (self.cache[v], v))
+        for key, _ in self.pred.items():
+            if (self.pred[key].prev == v):
+                self._unlink(key) 
 
     def _cascMatch(self, e, op, w):
         u, v = e
-        uh, vh = self.pred[u].height, self.pred[v].height
         match op:
             case "add":
-                if self.cache[u] + w > self.cache[v]: return
+                if self.cache[u] + w >= self.cache[v]: return
                 self._predSet(u,v,w)
                 heapq.heappush(self.updates, (self.cache[v], v, u)) 
             case "rem":
                 if self.pred[v].prev != u: return
-                self._cascRepair(v)
                 heapq.heappush(self.updates, (self.cache[u], u))
-                # print("REM", self.pred[v])
-            # case "mod":
-            #     if self.pred[v].prev != u:
-            #         if w >= self.graph.getW(u,v): return
-            #         print("MOD", w, self.graph.getW(u,v))
-            # case _:
-            #     print("error")
+                self._unlink(v)
+            case "mod":
+                if self.pred[v].prev != u:
+                    if self.cache[u] + w >= self.cache[v]: return
+                    self._predSet(u,v,w)
+                    heapq.heappush(self.updates, (self.cache[v], v))
+                else:
+                    if self.cache[u] + w <= self.cache[v]: 
+                        self._predSet(u,v,w)
+                        heapq.heappush(self.updates, (self.cache[v], v))
+                        return
+                    heapq.heappush(self.repairs, (self.cache[v], v))
+            case _:
+                print("error")
         return
 
     @_perfDec
     def cascade(self):
-        comp, valc, acc = self._cascLoop()
+        self._cascRepair() # type: ignore
+        comp, valc, acc = self._cascLoop() # type: ignore
         self.perf.inc("cascade",comp,valc,acc)
             
 
@@ -225,17 +258,17 @@ class CascadeSP:
 if __name__ == "__main__":
     # Create an instance of CascadeSP
     csp = CascadeSP()
-
-    for _ in range(1):
+    val = 1
+    for i in range(val):
         os.system("clear")
         csp.clear()
-        csp.gen()
+        csp.gen(50)
         print("dijkstra...")
         csp.dijkstra(0)
         csp.plot()
-        csp.randUpd(10,"rem")
-        csp.plot("upd.png")
         csp.perfClear()
+        csp.randUpd(10, ["add", "mod","rem"])
+        csp.plot("upd.png")
         print("cascade...")
         csp.cascade() # type: ignore
         csp.plot("casc.png")
@@ -245,6 +278,7 @@ if __name__ == "__main__":
         csp.plot("bench.png")
         v2 = csp.cache
         csp.show()
+        print("RUN: ", i+1, "/", val)
         if (v1 != v2): 
             print("------------")
             print(v1)
