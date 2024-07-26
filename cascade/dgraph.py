@@ -4,11 +4,10 @@ import matplotlib.pyplot as plt
 from attrs import define, field, Factory as new
 from typing import Dict, Any, Tuple
 """
-Wrapper class for NetworkX graph
+Wrapper class for networkx graph
 
-Can import predetermined graph or generate one using erdos_renyi. Also allows for
-random updates or a list of updates can be provided (see upd() for formatting and 
-expected output)
+Import or generate graph using erdos_renyi; supports random or provided updates 
+(see update() for formatting and expected output)
 """
 
 @define
@@ -64,10 +63,10 @@ class DGraph:
 
     def _gridLayout(self):
         pos = {}
-        num_nodes = self.graph.number_of_nodes()
-        side_len = int(num_nodes**0.5) + 1
+        n = self.graph.number_of_nodes()
+        _len = int(n**0.5) + 1
         for i, node in enumerate(sorted(self.graph.nodes())):
-            pos[node] = (i % side_len, -i // side_len)
+            pos[node] = (i % _len, -i // _len)
         return pos
 
     def _plotGraph(self, colors):
@@ -80,21 +79,21 @@ class DGraph:
 
     def _drawSP(self, source, pos, pred):
         if source:
-            path_edges = [(pred[node].prev, node) for node in pred]
-            path_edges = [e for e in path_edges if self.graph.has_edge(e[0], e[1])]
+            edges = [(pred[node].prev, node) for node in pred]
+            edges = [e for e in edges if self.graph.has_edge(e[0], e[1])]
             nx.draw_networkx_edges(
-                self.graph, pos, edgelist=path_edges, edge_color="r", width=2
+                self.graph, pos, edgelist=edges, edge_color="r", width=2
             )
 
-    def _colorUpd(self, upd):
-        upd_nodes = set()
-        for _, *val in upd:
-            upd_nodes.add(val[0])
-        return ["red" if node in upd_nodes else "lightblue" for node in self.graph.nodes]
+    def _colorUpdate(self, updates):
+        nodes = set()
+        for _, *val in updates:
+            nodes.add(val[0])
+        return ["red" if node in nodes else "lightblue" for node in self.graph.nodes]
 
-    def plot(self, filename="graph.png", pred=None, upd=None):
+    def plot(self, filename="graph.png", pred=None, updates=None):
         colors = ["lightblue"]*len(self.graph.nodes)
-        if upd: colors = self._colorUpd(upd)
+        if updates: colors = self._colorUpdate(updates)
         self._plotGraph(colors)
         if pred:
             source = None
@@ -127,7 +126,7 @@ class DGraph:
 
     # updates in form [('id', (op, weight=None)),...]
     # op = "add", "rem", "mod"
-    def upd(self, updates):
+    def update(self, updates):
         vis = set()
         ret = []
         for (key, val, *opt) in updates:
@@ -147,15 +146,15 @@ class DGraph:
                 u, v = e
         return ((u, v), op, w)
 
-    def randUpd(self, N, opt=None):
-        upd = []
+    def randUpdate(self, N, opt=None):
+        update = []
         n, m, i = list(self.graph.nodes()), list(self.graph.edges()), 0
         while i < N:
             op = random.choice(["add", "rem", "mod"])
             if opt: op = random.choice(opt)
-            upd.append(self._randChoose(op, n, m))
+            update.append(self._randChoose(op, n, m))
             i += 1
-        return upd
+        return update
 
 # Example usage:
 if __name__ == "__main__":
@@ -176,12 +175,12 @@ if __name__ == "__main__":
     dgraph.remVert(10)
 
     # Perform random updates
-    dgraph.randUpd(5)
+    dgraph.randUpdate(5)
 
     # manual updates
-    upd = [(11, "add"), ((1, 2), "mod", 5), ((2, 3), "rem"), ((3, 4), "mod"),
+    updates = [(11, "add"), ((1, 2), "mod", 5), ((2, 3), "rem"), ((3, 4), "mod"),
         ((3, 4), "mod", "bait")]
-    ret = dgraph.upd(upd)
+    ret = dgraph.update(updates)
     print(ret)
 
     # Plot the updated graph
