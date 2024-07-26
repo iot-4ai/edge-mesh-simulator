@@ -1,7 +1,7 @@
 [style] # I have opinions
 
 based_on_style = pep8
-column_limit = 90
+column_limit = 120
 use_tabs = false
 blank_lines_around_top_level_definition = 1
 continuation_align_style=fixed

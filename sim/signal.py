@@ -13,7 +13,7 @@ def occlusion(start, end, cloud):
     pos = [int(coord) for coord in start]
     step = sign(diff).astype(int) # step direction
     # init: find first voxel boundary along <dx, dy, dz>
-    inters = [(int(coord + (s > 0)) - coord)/d if d else inf 
+    inters = [(int(coord + (s > 0)) - coord)/d if d else inf
         for coord, d, s in zip(start, diff, step)]
 
     # *how much <dx, dy, dz> must change for a unit increase in t
@@ -38,14 +38,18 @@ def occlusion(start, end, cloud):
 density = {
     "empty": 1,  # air: 100m
     "shelf": 2,  # shelf: 50m
-    "pile": 3,  # pile: 33m
-    "wall": 5   # wall: 20m
+    "pile": 3,   # pile: 33m
+    "wall": 5    # wall: 20m
 }
 
 MAX_STREN = 100
 
-def sigStren(cloud, mesh):
+def sigStren(cloud, mesh, callback):
+    callback(0.0, "Determining signal strength")
+    cur, total = 0, len(mesh)
+
     for cA in mesh.values():
+        cur += 1
         for cB in mesh.values():
             if cA.name >= cB.name: continue
             if dist(cA.pos, cB.pos) > MAX_STREN: continue
@@ -55,3 +59,6 @@ def sigStren(cloud, mesh):
             strength = MAX_STREN - loss
 
             cA.hears[cB.name] = cB.hears[cA.name] = strength
+
+        callback(cur / total)
+    callback(1.0, "Connections made", log=False)

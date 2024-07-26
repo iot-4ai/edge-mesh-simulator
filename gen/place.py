@@ -1,6 +1,6 @@
 from typing import * # type: ignore
 import numpy as num
-from nptyping import NDArray
+from numpy.typing import NDArray
 from numpy.random import choice as choose
 from random import randrange as randRange, random
 from collections import deque
