@@ -1,0 +1,210 @@
+------PERFORMANCE------
+upd:
+ avg_time:   581.74ns
+cascade:
+ avg_time:   139.0ns
+dijkstra:
+ avg_time:   59.13ns
+------PERFORMANCE------
+upd:
+ avg_time:   1759.05ns
+cascade:
+ avg_time:   1863.96ns
+dijkstra:
+ avg_time:   498.77ns
+------PERFORMANCE------
+upd:
+ avg_time:   2341.99ns
+cascade:
+ avg_time:   5143.17ns
+dijkstra:
+ avg_time:   1764.77ns
+------PERFORMANCE------
+upd:
+ avg_time:   3263.95ns
+cascade:
+ avg_time:   7419.82ns
+dijkstra:
+ avg_time:   32608.75ns
+------PERFORMANCE------
+upd:
+ avg_time:   3205.06ns
+cascade:
+ avg_time:   2557.99ns
+dijkstra:
+ avg_time:   126569.03ns
+------PERFORMANCE------
+upd:
+ avg_time:   14497.76ns
+cascade:
+ avg_time:   10.01ns
+dijkstra:
+ avg_time:   4379476.31ns
+------PERFORMANCE------
+upd:
+ avg_time:   543.12ns
+cascade:
+ avg_time:   118.02ns
+dijkstra:
+ avg_time:   52.93ns
+------PERFORMANCE------
+upd:
+ avg_time:   2079.25ns
+cascade:
+ avg_time:   3419.88ns
+dijkstra:
+ avg_time:   504.02ns
+------PERFORMANCE------
+upd:
+ avg_time:   2247.1ns
+cascade:
+ avg_time:   1518.01ns
+dijkstra:
+ avg_time:   1651.05ns
+------PERFORMANCE------
+upd:
+ avg_time:   3086.09ns
+cascade:
+ avg_time:   2633.81ns
+dijkstra:
+ avg_time:   34458.16ns
+------PERFORMANCE------
+upd:
+ avg_time:   3450.16ns
+cascade:
+ avg_time:   2661.94ns
+dijkstra:
+ avg_time:   201992.03ns
+------PERFORMANCE------
+upd:
+ avg_time:   5994.08ns
+cascade:
+ avg_time:   8.11ns
+dijkstra:
+ avg_time:   3373908.04ns
+------PERFORMANCE------
+upd:
+ avg_time:   557.9ns
+cascade:
+ avg_time:   126.84ns
+dijkstra:
+ avg_time:   65.09ns
+------PERFORMANCE------
+upd:
+ avg_time:   1935.72ns
+cascade:
+ avg_time:   2233.03ns
+dijkstra:
+ avg_time:   479.94ns
+------PERFORMANCE------
+upd:
+ avg_time:   2399.92ns
+cascade:
+ avg_time:   3807.07ns
+dijkstra:
+ avg_time:   1571.89ns
+------PERFORMANCE------
+upd:
+ avg_time:   2892.02ns
+cascade:
+ avg_time:   1368.05ns
+dijkstra:
+ avg_time:   32019.14ns
+------PERFORMANCE------
+upd:
+ avg_time:   2999.07ns
+cascade:
+ avg_time:   1012.09ns
+dijkstra:
+ avg_time:   126710.89ns
+------PERFORMANCE------
+upd:
+ avg_time:   13415.1ns
+cascade:
+ avg_time:   13448.95ns
+dijkstra:
+ avg_time:   4091550.11ns
+------PERFORMANCE------
+upd:
+ avg_time:   825.17ns
+cascade:
+ avg_time:   194.07ns
+dijkstra:
+ avg_time:   59.84ns
+------PERFORMANCE------
+upd:
+ avg_time:   2326.97ns
+cascade:
+ avg_time:   2558.23ns
+dijkstra:
+ avg_time:   504.02ns
+------PERFORMANCE------
+upd:
+ avg_time:   2289.06ns
+cascade:
+ avg_time:   4177.09ns
+dijkstra:
+ avg_time:   1508.24ns
+------PERFORMANCE------
+upd:
+ avg_time:   4208.8ns
+cascade:
+ avg_time:   2713.92ns
+dijkstra:
+ avg_time:   33288.96ns
+------PERFORMANCE------
+upd:
+ avg_time:   3319.03ns
+cascade:
+ avg_time:   2041.1ns
+dijkstra:
+ avg_time:   130310.06ns
+------PERFORMANCE------
+upd:
+ avg_time:   9824.99ns
+cascade:
+ avg_time:   8.82ns
+dijkstra:
+ avg_time:   3698793.89ns
+------PERFORMANCE------
+upd:
+ avg_time:   578.88ns
+cascade:
+ avg_time:   156.88ns
+dijkstra:
+ avg_time:   51.98ns
+------PERFORMANCE------
+upd:
+ avg_time:   1856.09ns
+cascade:
+ avg_time:   2423.05ns
+dijkstra:
+ avg_time:   483.75ns
+------PERFORMANCE------
+upd:
+ avg_time:   2339.12ns
+cascade:
+ avg_time:   3085.14ns
+dijkstra:
+ avg_time:   1538.04ns
+------PERFORMANCE------
+upd:
+ avg_time:   2587.08ns
+cascade:
+ avg_time:   1750.95ns
+dijkstra:
+ avg_time:   32078.03ns
+------PERFORMANCE------
+upd:
+ avg_time:   3387.21ns
+cascade:
+ avg_time:   3251.79ns
+dijkstra:
+ avg_time:   129194.02ns
+------PERFORMANCE------
+upd:
+ avg_time:   7575.04ns
+cascade:
+ avg_time:   10038.61ns
+dijkstra:
+ avg_time:   4143118.62ns

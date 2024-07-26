@@ -3,6 +3,13 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from attrs import define, field, Factory as new
 from typing import Dict, Any, Tuple
+"""
+Wrapper class for NetworkX graph
+
+Can import predetermined graph or generate one using erdos_renyi. Also allows for
+random updates or a list of updates can be provided (see upd() for formatting and 
+expected output)
+"""
 
 @define
 class DGraph:
@@ -96,32 +103,9 @@ class DGraph:
                     source = node
                     break
             self._drawSP(source, self.pos, pred)
-
         plt.savefig("output/" + filename)
         plt.close()
         if pred: self.plot("graph.png")
-
-    def _randChoose(self, op, n, m):
-        u, v = random.sample(n, 2)
-        e = random.sample(m, 1)[0]
-        w = random.randint(1, 10)
-        match op:
-            case "add":
-                while self.graph.has_edge(u, v):
-                    u, v = random.sample(n, 2)
-            case "rem" | "mod":
-                u, v = e
-        return ((u, v), op, w)
-
-    def randUpd(self, N, opt=None):
-        upd = []
-        n, m, i = list(self.graph.nodes()), list(self.graph.edges()), 0
-        while i < N:
-            op = random.choice(["add", "rem", "mod"])
-            if opt: op = random.choice(opt)
-            upd.append(self._randChoose(op, n, m))
-            i += 1
-        return upd
 
     def _choose(self, inp, vis):
         key, val, opt = inp
@@ -150,6 +134,28 @@ class DGraph:
             resp = self._choose((key, val, opt), vis)
             ret.append(resp)
         return ret
+
+    def _randChoose(self, op, n, m):
+        u, v = random.sample(n, 2)
+        e = random.sample(m, 1)[0]
+        w = random.randint(1, 10)
+        match op:
+            case "add":
+                while self.graph.has_edge(u, v):
+                    u, v = random.sample(n, 2)
+            case "rem" | "mod":
+                u, v = e
+        return ((u, v), op, w)
+
+    def randUpd(self, N, opt=None):
+        upd = []
+        n, m, i = list(self.graph.nodes()), list(self.graph.edges()), 0
+        while i < N:
+            op = random.choice(["add", "rem", "mod"])
+            if opt: op = random.choice(opt)
+            upd.append(self._randChoose(op, n, m))
+            i += 1
+        return upd
 
 # Example usage:
 if __name__ == "__main__":
