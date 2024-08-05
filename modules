@@ -9,3 +9,5 @@ scipy
 fastapi
 uvicorn
 toml
+sortedcontainers
+pygraphviz
